@@ -22,11 +22,11 @@ def new_byte(choices): return random.choice(choices)
 def backtrack(prev_bytes):
     global SEEN_AT
     # backtrack one byte
-    seen = SEEN_AT[len(prev_bytes)-2]
+    seen = SEEN_AT[len(prev_bytes)-1]
     SEEN_AT = SEEN_AT[:-1]
     last_byte = prev_bytes[-1]
     logit('backtracking %d %s' % (len(prev_bytes), last_byte))
-    seen.add(last_byte) # dont explore this byte again
+    assert last_byte in seen
     prev_bytes = prev_bytes[:-1]
     choices = [i for i in SET_OF_BYTES if i not in seen]
     if not choices:
@@ -52,6 +52,7 @@ def generate(validate, prev_bytes=None):
         if rv == Status.Complete:
             return ib
         elif rv == Status.Incomplete:
+            seen.add(byte)  # dont explore this byte again
             prev_bytes = cur_bytes
             assert len(prev_bytes) >= len(SEEN_AT)
             assert len(prev_bytes)- len(SEEN_AT) == 1
