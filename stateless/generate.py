@@ -10,6 +10,10 @@ class Status(enum.Enum):
 SET_OF_BYTES = [i for i in range(256)]
 SEEN_AT = []
 
+def init_set_of_bytes(s_bytes):
+    global SET_OF_BYTES
+    SET_OF_BYTES = s_bytes
+
 def logit(v):
     print(v, file=sys.stderr)
 
