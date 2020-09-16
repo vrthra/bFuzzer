@@ -1,5 +1,5 @@
 import stateless.generate as G
-import decoder
+import examples.decoder as decoder
 
 def create_valid_inputs(n=1):
     i = 0
