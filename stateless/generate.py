@@ -25,7 +25,7 @@ def generate(validate, prev_bytes=None):
             # backtrack one byte
             seen = SEEN_AT[len(prev_bytes)]
             last_byte = prev_bytes[-1]
-            logit('backtracking', len(prev_bytes), last_byte)
+            logit('backtracking %d %s' % (len(prev_bytes), last_byte))
             seen.add(last_byte) # dont explore this byte again
             prev_bytes = prev_bytes[:-1]
             choices = [i for i in SET_OF_BYTES if i not in seen]
@@ -34,20 +34,19 @@ def generate(validate, prev_bytes=None):
         cur_bytes = prev_bytes + [byte]
         l_cur_bytes = len(cur_bytes)
 
-        if l_cur_bytes >= len(SEEN_AT):
-            SEEN_AT.append(set())
-        SEEN_AT[len(cur_bytes)-1].add(byte) 
-
         ib = MyBytearray(cur_bytes)
-        logit('%s..%s, %s' % (ib.ba[0:20], ib.ba[-10:], len(ib.ba)))
+        logit('%s..%s, %s' % (ib.b[0:20], ib.b[-10:], len(ib.b)))
         rv, _n, _at = validate(ib)
         if rv == Status.Complete:
             return ib
         elif rv == Status.Incomplete:
-            seen.clear()
             prev_bytes = cur_bytes
             if len(prev_bytes) < len(SEEN_AT):
                 SEEN_AT = SEEN_AT[:-1]
+            else:
+                assert len(prev_bytes)- len(SEEN_AT) == 1
+                SEEN_AT.append(seen)
+            seen = set()
         elif rv == Status.Incorrect:
             seen.add(byte)
         else:
@@ -58,22 +57,25 @@ class NeedMoreException(Exception): ...
 
 class MyBytearray:
     def __init__(self, int_arr):
-        self.ba = bytearray(int_arr)
+        self.b = bytearray(int_arr)
 
     def __len__(self):
-        return len(self.ba)
+        return len(self.b)
 
     def __getitem__(self, idx):
         if isinstance(idx, int):
-            if len(self.ba) <= idx:
+            if len(self.b) <= idx:
                 raise NeedMoreException()
-            return self.ba[idx]
+            return bytes([self.b[idx]])
         elif isinstance(idx, slice):
-            if idx.start >= len(self.ba):
+            if idx.start >= len(self.b):
                 raise NeedMoreException()
-            if idx.stop is not None and idx.stop >= len(self.ba):
+            if idx.stop is not None and idx.stop >= len(self.b):
                 raise NeedMoreException()
-            return MyBytearray(self.ba[idx])
+            return MyBytearray(self.b[idx])
         else:
             assert False, idx
+
+    def __repr__(self):
+        return 'MyBytearray[%s]' % repr(self.b)
 
