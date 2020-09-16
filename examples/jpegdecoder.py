@@ -1,3 +1,4 @@
+import struct
 from struct import unpack
 import math
 
@@ -67,7 +68,7 @@ def RemoveFF00(data):
     datapro = []
     i = 0
     while True:
-        b, bnext = unpack("BB", data[i : i + 2].ba)
+        b, bnext = unpack("BB", data[i : i + 2].b)
         if b == 0xFF:
             if bnext != 0:
                 break
@@ -86,7 +87,7 @@ def GetArray(type, l, length):
     s = ""
     for i in range(length):
         s = s + type
-    return list(unpack(s, l[:length].ba))
+    return list(unpack(s, l[:length].b))
 
 
 def DecodeNumber(code, bits):
@@ -234,7 +235,7 @@ class JPEG:
         self.quantMapping = []
 
     def DefineQuantizationTables(self, data):
-        (hdr,) = unpack("B", data[0:1].ba)
+        (hdr,) = unpack("B", data[0:1].b)
         self.quant[hdr] = GetArray("B", data[1 : 1 + 64], 64)
         data = data[65:]
 
@@ -291,16 +292,16 @@ class JPEG:
         return lenchunk + hdrlen
 
     def BaselineDCT(self, data):
-        hdr, self.height, self.width, components = unpack(">BHHB", data[0:6].ba)
+        hdr, self.height, self.width, components = unpack(">BHHB", data[0:6].b)
         print("size %ix%i" % (self.width,  self.height))
 
         for i in range(components):
-            id, samp, QtbId = unpack("BBB", data[6 + i * 3 : 9 + i * 3].ba)
+            id, samp, QtbId = unpack("BBB", data[6 + i * 3 : 9 + i * 3].b)
             self.quantMapping.append(QtbId)
 
     def decodeHuffman(self, data):
         offset = 0
-        (header,) = unpack("B", data[offset : offset + 1].ba)
+        (header,) = unpack("B", data[offset : offset + 1].b)
         print(header, header & 0x0F, (header >> 4) & 0x0F)
         offset += 1
 
@@ -320,14 +321,14 @@ class JPEG:
     def decode(self, data):
         while True:
             #print(len(data))
-            (marker,) = unpack(">H", data[0:2].ba)
+            (marker,) = unpack(">H", data[0:2].b)
             #print(marker_mapping.get(marker))
             if marker == 0xFFD8:
                 data = data[2:]
             elif marker == 0xFFD9:
                 return
             else:
-                (len_chunk,) = unpack(">H", data[2:4].ba)
+                (len_chunk,) = unpack(">H", data[2:4].b)
                 len_chunk += 2
                 chunk = data[4:len_chunk]
                 if marker == 0xFFC4:
@@ -341,4 +342,20 @@ class JPEG:
                 data = data[len_chunk:]
             if len(data) == 0:
                 break
+
+import stateless.generate as G
+
+def validate(input_bytes):
+    try:
+        if len(input_bytes) > 1000: return G.Status.Complete, -1, ''
+        JPEG().decode(input_bytes)
+        return G.Status.Complete, -1, ''
+    except struct.error as e:
+        msg = str(e)
+        if msg.startswith("unpack requires a buffer of "):
+            return G.Status.Incomplete, 0, ''
+        else:
+            raise e
+    except G.NeedMoreException as e:
+        return G.Status.Incomplete, 0, ''
 
