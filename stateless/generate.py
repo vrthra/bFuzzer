@@ -23,7 +23,8 @@ def generate(validate, prev_bytes=None):
         choices = [i for i in SET_OF_BYTES if i not in seen]
         if not choices:
             # backtrack one byte
-            seen = SEEN_AT[len(prev_bytes)]
+            seen = SEEN_AT[len(prev_bytes)-2]
+            SEEN_AT = SEEN_AT[:-1]
             last_byte = prev_bytes[-1]
             logit('backtracking %d %s' % (len(prev_bytes), last_byte))
             seen.add(last_byte) # dont explore this byte again
@@ -41,11 +42,9 @@ def generate(validate, prev_bytes=None):
             return ib
         elif rv == Status.Incomplete:
             prev_bytes = cur_bytes
-            if len(prev_bytes) < len(SEEN_AT):
-                SEEN_AT = SEEN_AT[:-1]
-            else:
-                assert len(prev_bytes)- len(SEEN_AT) == 1
-                SEEN_AT.append(seen)
+            assert len(prev_bytes) >= len(SEEN_AT)
+            assert len(prev_bytes)- len(SEEN_AT) == 1
+            SEEN_AT.append(seen)
             seen = set()
         elif rv == Status.Incorrect:
             seen.add(byte)
@@ -70,7 +69,7 @@ class MyBytearray:
         elif isinstance(idx, slice):
             if idx.start >= len(self.b):
                 raise NeedMoreException()
-            if idx.stop is not None and idx.stop >= len(self.b):
+            if idx.stop is not None and idx.stop > len(self.b):
                 raise NeedMoreException()
             return MyBytearray(self.b[idx])
         else:

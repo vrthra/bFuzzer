@@ -8,9 +8,7 @@ def validate(inputstr):
             return G.Status.Incorrect, None, None
         if inputstr[2] != b'L':
             return G.Status.Incorrect, None, None
-        if inputstr[3] != b'L':
-            return G.Status.Incorrect, None, None
-        if inputstr[4] != b'O':
+        if inputstr[3:5].b != b'LO':
             return G.Status.Incorrect, None, None
         return G.Status.Complete, None, None
     except G.NeedMoreException as e:
