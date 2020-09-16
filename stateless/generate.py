@@ -15,6 +15,20 @@ def logit(v):
 
 def new_byte(choices): return random.choice(choices)
 
+def backtrack(prev_bytes):
+    global SEEN_AT
+    # backtrack one byte
+    seen = SEEN_AT[len(prev_bytes)-2]
+    SEEN_AT = SEEN_AT[:-1]
+    last_byte = prev_bytes[-1]
+    logit('backtracking %d %s' % (len(prev_bytes), last_byte))
+    seen.add(last_byte) # dont explore this byte again
+    prev_bytes = prev_bytes[:-1]
+    choices = [i for i in SET_OF_BYTES if i not in seen]
+    if not choices:
+        return backtrack(prev_bytes)
+    return seen, prev_bytes, choices
+
 def generate(validate, prev_bytes=None):
     global SEEN_AT
     if prev_bytes is None: prev_bytes = []
@@ -22,14 +36,7 @@ def generate(validate, prev_bytes=None):
     while True:
         choices = [i for i in SET_OF_BYTES if i not in seen]
         if not choices:
-            # backtrack one byte
-            seen = SEEN_AT[len(prev_bytes)-2]
-            SEEN_AT = SEEN_AT[:-1]
-            last_byte = prev_bytes[-1]
-            logit('backtracking %d %s' % (len(prev_bytes), last_byte))
-            seen.add(last_byte) # dont explore this byte again
-            prev_bytes = prev_bytes[:-1]
-            choices = [i for i in SET_OF_BYTES if i not in seen]
+            seen, prev_bytes, choices = backtrack(prev_bytes)
 
         byte = new_byte(choices)
         cur_bytes = prev_bytes + [byte]
