@@ -45,7 +45,11 @@ def generate(validate, prev_bytes=None):
 
         ib = MyBytearray(cur_bytes)
         logit('%s..%s, %s' % (ib.b[0:20], ib.b[-10:], len(ib.b)))
-        rv, _n, _at = validate(ib)
+
+        #rv: Complete, Incomplete Incorrect
+        #n: the index of the character -1 if not applicable
+        #c: the character where error happened  "" if not applicable
+        rv, _n, _c = validate(ib)
         if rv == Status.Complete:
             return ib
         elif rv == Status.Incomplete:

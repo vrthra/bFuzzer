@@ -2,7 +2,7 @@ run:
 	python3 main.py
 
 drun:
-	python3 -m pudb main.py
+	env LC_ALL=C python3 -m pudb main.py
 
 
 clean:
