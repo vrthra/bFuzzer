@@ -1,11 +1,6 @@
 import sys
 import random
-import enum
-
-class Status(enum.Enum):
-    Complete = 0
-    Incomplete = 1
-    Incorrect = -1
+from stateless.status import *
 
 SET_OF_BYTES = [i for i in range(256)]
 SEEN_AT = []

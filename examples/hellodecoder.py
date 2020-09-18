@@ -1,16 +1,17 @@
 import stateless.generate as G
+from stateless.status import *
 
 def validate(inputstr):
     try:
         if inputstr[0] != b'H':
-            return G.Status.Incorrect, None, None
+            return Status.Incorrect, None, None
         if inputstr[1] != b'E':
-            return G.Status.Incorrect, None, None
+            return Status.Incorrect, None, None
         if inputstr[2] != b'L':
-            return G.Status.Incorrect, None, None
+            return Status.Incorrect, None, None
         if inputstr[3:5].b != b'LO':
-            return G.Status.Incorrect, None, None
-        return G.Status.Complete, None, None
+            return Status.Incorrect, None, None
+        return Status.Complete, None, None
     except G.NeedMoreException as e:
-        return G.Status.Incomplete, None, None
+        return Status.Incomplete, None, None
 

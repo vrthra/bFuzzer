@@ -1,6 +1,8 @@
 import struct
 from struct import unpack
 import math
+import random
+random.seed(1)
 
 # This is from https://yasoob.me/posts/understanding-and-writing-jpeg-decoder-in-python/
 # and is used as an example.
@@ -344,18 +346,19 @@ class JPEG:
                 break
 
 import stateless.generate as G
+from stateless.status import *
 
 def validate(input_bytes):
     try:
-        if len(input_bytes) > 1000: return G.Status.Complete, -1, ''
+        if len(input_bytes) > 10000: return Status.Complete, -1, ''
         JPEG().decode(input_bytes)
-        return G.Status.Complete, -1, ''
+        return Status.Complete, -1, ''
     except struct.error as e:
         msg = str(e)
         if msg.startswith("unpack requires a buffer of "):
-            return G.Status.Incomplete, 0, ''
+            return Status.Incomplete, 0, ''
         else:
             raise e
     except G.NeedMoreException as e:
-        return G.Status.Incomplete, 0, ''
+        return Status.Incomplete, 0, ''
 
