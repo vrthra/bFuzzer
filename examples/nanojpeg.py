@@ -459,14 +459,14 @@ def njShowBits(bits):
             nj.bufbits += 8
             continue
 
-        newbyte = nj.spos[nj.pos]
+        newbyte = x(nj.spos[nj.pos])
         nj.pos += 1
         nj.size -= 1
         nj.bufbits += 8
         nj.buf = (nj.buf << 8) | newbyte
         if (newbyte == 0xFF):
             if (nj.size):
-                marker = nj.spos[nj.pos]
+                marker = x(nj.spos[nj.pos])
                 nj.pos += 1
                 nj.size -= 1
                 if marker == 0xD9:
@@ -502,14 +502,14 @@ def njSkip(count):
     if (nj.size < 0): raise NeedMoreException(NJ_SYNTAX_ERROR)
 
 def njDecode16(pos):
-    return (nj.spos[pos] << 8) | nj.spos[pos + 1]
+    return (x(nj.spos[pos]) << 8) | x(nj.spos[pos + 1])
 
 def njDecodeLength():
     if (nj.size < 2):
-        raise Exception(NJ_SYNTAX_ERROR)
+        raise NeedMoreException(NJ_SYNTAX_ERROR)
     nj.length = njDecode16(nj.pos)
     if (nj.length > nj.size):
-        raise Exception(NJ_SYNTAX_ERROR)
+        raise InvalidValueException(NJ_SYNTAX_ERROR)
     njSkip(2)
 
 def njSkipMarker():
@@ -522,11 +522,11 @@ def njDecodeSOF():
     njDecodeLength()
     if (nj.length < 9):
         raise Exception(NJ_SYNTAX_ERROR)
-    if (nj.spos[nj.pos] != 8):
+    if (x(nj.spos[nj.pos]) != 8):
         raise Exception(NJ_UNSUPPORTED)
     nj.height = njDecode16(nj.pos + 1)
     nj.width = njDecode16(nj.pos + 3)
-    nj.ncomp = nj.spos[nj.pos + 5]
+    nj.ncomp = x(nj.spos[nj.pos + 5])
     njSkip(6)
     if nj.ncomp != 1 and nj.ncomp != 3:
         raise Exception(NJ_UNSUPPORTED)
@@ -535,18 +535,18 @@ def njDecodeSOF():
     i = 0
     while i < nj.ncomp:
         c = nj.comp[i]
-        c.cid = nj.spos[nj.pos]
-        c.ssx = nj.spos[nj.pos + 1] >> 4
+        c.cid = x(nj.spos[nj.pos])
+        c.ssx = x(nj.spos[nj.pos + 1]) >> 4
         if not c.ssx:
             raise Exception(NJ_SYNTAX_ERROR)
         if (c.ssx & (c.ssx - 1)):
             raise Exception(NJ_UNSUPPORTED)  # non-power of two
-        c.ssy = nj.spos[nj.pos + 1] & 15
+        c.ssy = x(nj.spos[nj.pos + 1]) & 15
         if not c.ssy:
             raise Exception(NJ_SYNTAX_ERROR)
         if (c.ssy & (c.ssy - 1)):
             raise Exception(NJ_UNSUPPORTED)  # non-power of two
-        c.qtsel = nj.spos[nj.pos + 2]
+        c.qtsel = x(nj.spos[nj.pos + 2])
         if c.qtsel & 0xFC:
             raise Exception(NJ_SYNTAX_ERROR)
         njSkip(3)
@@ -578,14 +578,14 @@ def njDecodeDHT():
     counts = [0] * 16
     njDecodeLength()
     while (nj.length >= 17):
-        i = nj.spos[nj.pos]
+        i = x(nj.spos[nj.pos])
         if (i & 0xEC):
             raise Exception(NJ_SYNTAX_ERROR)
         if (i & 0x02):
             raise Exception(NJ_UNSUPPORTED)
         i = (i | (i >> 3)) & 3  # combined DC/AC + tableid value
         for codelen in range(1, 17): # 1 to 16
-            counts[codelen - 1] = nj.spos[nj.pos + codelen]
+            counts[codelen - 1] = x(nj.spos[nj.pos + codelen])
         njSkip(17)
         vlc = 0
         remain = 65536
@@ -600,7 +600,7 @@ def njDecodeDHT():
             if (remain < 0):
                 raise Exception(NJ_SYNTAX_ERROR)
             for ii in range(currcnt):
-                code = nj.spos[nj.pos + ii]
+                code = x(nj.spos[nj.pos + ii])
                 j = spread
                 while j:
                     nj.vlctab[i][vlc].bits = codelen
@@ -618,12 +618,12 @@ def njDecodeDHT():
 def njDecodeDQT():
     njDecodeLength()
     while (nj.length >= 65):
-        i = nj.spos[nj.pos]
+        i = x(nj.spos[nj.pos])
         if (i & 0xFC):
             raise Exception(NJ_SYNTAX_ERROR)
         nj.qtavail |= 1 << i
         for j in range(64):
-            nj.qtab[i][j] = nj.spos[nj.pos + j + 1]
+            nj.qtab[i][j] = x(nj.spos[nj.pos + j + 1])
         njSkip(65)
     if (nj.length):
         raise Exception(NJ_SYNTAX_ERROR)
@@ -686,21 +686,21 @@ def njDecodeScan():
     njDecodeLength()
     if (nj.length < (4 + 2 * nj.ncomp)):
         raise Exception(NJ_SYNTAX_ERROR)
-    if (nj.spos[nj.pos] != nj.ncomp):
+    if (x(nj.spos[nj.pos]) != nj.ncomp):
         raise Exception(NJ_UNSUPPORTED)
     njSkip(1)
     i = 0
     while (i < nj.ncomp):
         c = nj.comp[i]
-        if (nj.spos[nj.pos] != c.cid):
+        if (x(nj.spos[nj.pos]) != c.cid):
             raise Exception(NJ_SYNTAX_ERROR)
-        if (nj.spos[nj.pos + 1] & 0xEE):
+        if (x(nj.spos[nj.pos + 1]) & 0xEE):
             raise Exception(NJ_SYNTAX_ERROR)
-        c.dctabsel = nj.spos[nj.pos + 1] >> 4
-        c.actabsel = (nj.spos[nj.pos + 1] & 1) | 2
+        c.dctabsel = x(nj.spos[nj.pos + 1]) >> 4
+        c.actabsel = (x(nj.spos[nj.pos + 1]) & 1) | 2
         njSkip(2)
         i += 1
-    if (nj.spos[nj.pos] or (nj.spos[nj.pos + 1] != 63) or nj.spos[nj.pos + 2]):
+    if (x(nj.spos[nj.pos]) or (x(nj.spos[nj.pos + 1]) != 63) or x(nj.spos[nj.pos + 2])):
         raise Exception(NJ_UNSUPPORTED)
     njSkip(nj.length)
     mbx = 0
@@ -896,23 +896,22 @@ def njInit():
 def njDone():
     pass
 
+def x(v):
+    return int(v.hex(), 16)
+
 def njDecode(jpeg, size):
     njDone()
     nj.spos = jpeg
     nj.pos = 0
     nj.size = size & 0x7FFFFFFF
     if (nj.size < 2): return Status.Incomplete, None
-    #var = int(nj.spos[nj.pos].hex()) + 1
-    #print(nj.spos[nj.pos].hex())
-    #print(var)
-    if ((int(nj.spos[nj.pos].hex(), 16) ^ 0xFF) | (int(nj.spos[nj.pos+1].hex(), 16) ^ 0xD8)): return Status.Incorrect, -1
-    print("Now it is good.")
+    if ((x(nj.spos[nj.pos]) ^ 0xFF) | (x(nj.spos[nj.pos+1]) ^ 0xD8)): return Status.Incorrect, -1
     njSkip(2)
     while not nj.error:
-        if ((nj.size < 2) or (nj.spos[nj.pos] != 0xFF)):
-            return Status.Incomplete, -1
+        if (nj.size < 2): return Status.Incomplete, -1
+        if (x(nj.spos[nj.pos]) != 0xFF): return Status.Incorrect, -1
         njSkip(2)
-        m = nj.spos[nj.pos - 1]
+        m = x(nj.spos[nj.pos - 1])
         if m == 0xC0: njDecodeSOF()
         elif m == 0xC4: njDecodeDHT()
         elif m == 0xDB: njDecodeDQT()
@@ -922,7 +921,7 @@ def njDecode(jpeg, size):
         elif (m & 0xF0) == 0xE0:
             njSkipMarker()
         else:
-            return NJ_UNSUPPORTED
+            return Status.Incorrect, -1
     if (nj.error != __NJ_FINISHED): return nj.error
     nj.error = NJ_OK
     njConvert()
@@ -947,5 +946,9 @@ def validate(inputstr):
         return rv, n, c
     except NeedMoreException as e:
         return Status.Incomplete, -1, None
+    except InvalidValueException as e:
+        return Status.Incorrect, -1, None
     except Exception as e:
-        return Status.Incorrect, None, None
+        #return Status.Incorrect, None, None
+        print(e)
+        raise e
