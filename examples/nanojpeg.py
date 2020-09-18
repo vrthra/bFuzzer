@@ -20,6 +20,8 @@
 # Ported to python by Andras Suller <suller.andras@gmail.com>
 
 from stateless.status import *
+from stateless.exceptions import *
+
 
 ###############################################################################
 ## DOCUMENTATION SECTION                                                     ##
@@ -497,7 +499,7 @@ def njSkip(count):
     nj.pos += count
     nj.size -= count
     nj.length -= count
-    if (nj.size < 0): raise Exception(NJ_SYNTAX_ERROR)
+    if (nj.size < 0): raise NeedMoreException(NJ_SYNTAX_ERROR)
 
 def njDecode16(pos):
     return (nj.spos[pos] << 8) | nj.spos[pos + 1]
@@ -899,16 +901,16 @@ def njDecode(jpeg, size):
     nj.spos = jpeg
     nj.pos = 0
     nj.size = size & 0x7FFFFFFF
-    if (nj.size < 2): return Status.Incomplete
+    if (nj.size < 2): return Status.Incomplete, None
     #var = int(nj.spos[nj.pos].hex()) + 1
     #print(nj.spos[nj.pos].hex())
     #print(var)
-    if ((int(nj.spos[nj.pos].hex(), 16) ^ 0xFF) | (int(nj.spos[nj.pos].hex(), 16) ^ 0xD8)): return Status.Incorrect
+    if ((int(nj.spos[nj.pos].hex(), 16) ^ 0xFF) | (int(nj.spos[nj.pos+1].hex(), 16) ^ 0xD8)): return Status.Incorrect, -1
     print("Now it is good.")
     njSkip(2)
     while not nj.error:
         if ((nj.size < 2) or (nj.spos[nj.pos] != 0xFF)):
-            return NJ_SYNTAX_ERROR
+            return Status.Incomplete, -1
         njSkip(2)
         m = nj.spos[nj.pos - 1]
         if m == 0xC0: njDecodeSOF()
@@ -940,7 +942,10 @@ def njGetImageSize():
 
 def validate(inputstr):
     try:
-        v =  njDecode(inputstr, len(inputstr))
-        return v, None, None
+        v, at =  njDecode(inputstr, len(inputstr))
+        rv, n, c = v, at, ''
+        return rv, n, c
+    except NeedMoreException as e:
+        return Status.Incomplete, -1, None
     except Exception as e:
         return Status.Incorrect, None, None

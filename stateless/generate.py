@@ -1,6 +1,7 @@
 import sys
 import random
 from stateless.status import *
+from stateless.exceptions import *
 
 SET_OF_BYTES = [i for i in range(256)]
 SEEN_AT = []
@@ -64,8 +65,6 @@ def generate(validate, prev_bytes=None):
         else:
             raise Exception(rv)
     return None
-
-class NeedMoreException(Exception): ...
 
 class MyBytearray:
     def __init__(self, int_arr):
