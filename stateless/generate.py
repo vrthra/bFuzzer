@@ -16,6 +16,8 @@ def new_byte(choices): return random.choice(choices)
 
 def backtrack(prev_bytes):
     global SEEN_AT
+    if not prev_bytes:
+        raise Exception('Cant backtrack beyond zero index')
     # backtrack one byte
     seen = SEEN_AT[len(prev_bytes)-1]
     SEEN_AT = SEEN_AT[:-1]

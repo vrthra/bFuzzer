@@ -19,6 +19,7 @@
 #
 # Ported to python by Andras Suller <suller.andras@gmail.com>
 
+from stateless.status import *
 
 ###############################################################################
 ## DOCUMENTATION SECTION                                                     ##
@@ -898,11 +899,11 @@ def njDecode(jpeg, size):
     nj.spos = jpeg
     nj.pos = 0
     nj.size = size & 0x7FFFFFFF
-    if (nj.size < 2): return NJ_NO_JPEG
+    if (nj.size < 2): return Status.Incomplete
     #var = int(nj.spos[nj.pos].hex()) + 1
     #print(nj.spos[nj.pos].hex())
     #print(var)
-    if ((int(nj.spos[nj.pos].hex(), 16) ^ 0xFF) | (int(nj.spos[nj.pos].hex(), 16) ^ 0xD8)): return NJ_NO_JPEG
+    if ((int(nj.spos[nj.pos].hex(), 16) ^ 0xFF) | (int(nj.spos[nj.pos].hex(), 16) ^ 0xD8)): return Status.Incorrect
     print("Now it is good.")
     njSkip(2)
     while not nj.error:
@@ -940,5 +941,6 @@ def njGetImageSize():
 def validate(inputstr):
     try:
         v =  njDecode(inputstr, len(inputstr))
+        return v, None, None
     except Exception as e:
-        return 1
+        return Status.Incorrect, None, None
