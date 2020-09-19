@@ -521,34 +521,34 @@ def njDecodeSOF():
     ssymax = 0
     njDecodeLength()
     if (nj.length < 9):
-        raise Exception(NJ_SYNTAX_ERROR)
+        raise InvalidValueException(NJ_SYNTAX_ERROR)
     if (x(nj.spos[nj.pos]) != 8):
-        raise Exception(NJ_UNSUPPORTED)
+        raise InvalidValueException(NJ_UNSUPPORTED)
     nj.height = njDecode16(nj.pos + 1)
     nj.width = njDecode16(nj.pos + 3)
     nj.ncomp = x(nj.spos[nj.pos + 5])
     njSkip(6)
     if nj.ncomp != 1 and nj.ncomp != 3:
-        raise Exception(NJ_UNSUPPORTED)
+        raise InvalidValueException(NJ_UNSUPPORTED)
     if (nj.length < (nj.ncomp * 3)):
-        raise Exception(NJ_SYNTAX_ERROR)
+        raise InvalidValueException(NJ_SYNTAX_ERROR)
     i = 0
     while i < nj.ncomp:
         c = nj.comp[i]
         c.cid = x(nj.spos[nj.pos])
         c.ssx = x(nj.spos[nj.pos + 1]) >> 4
         if not c.ssx:
-            raise Exception(NJ_SYNTAX_ERROR)
+            raise InvalidValueException(NJ_SYNTAX_ERROR)
         if (c.ssx & (c.ssx - 1)):
-            raise Exception(NJ_UNSUPPORTED)  # non-power of two
+            raise InvalidValueException(NJ_UNSUPPORTED)  # non-power of two
         c.ssy = x(nj.spos[nj.pos + 1]) & 15
         if not c.ssy:
-            raise Exception(NJ_SYNTAX_ERROR)
+            raise InvalidValueException(NJ_SYNTAX_ERROR)
         if (c.ssy & (c.ssy - 1)):
-            raise Exception(NJ_UNSUPPORTED)  # non-power of two
+            raise InvalidValueException(NJ_UNSUPPORTED)  # non-power of two
         c.qtsel = x(nj.spos[nj.pos + 2])
         if c.qtsel & 0xFC:
-            raise Exception(NJ_SYNTAX_ERROR)
+            raise InvalidValueException(NJ_SYNTAX_ERROR)
         njSkip(3)
         nj.qtused |= 1 << c.qtsel
         if (c.ssx > ssxmax): ssxmax = c.ssx
@@ -567,7 +567,7 @@ def njDecodeSOF():
         c.height = (nj.height * c.ssy + ssymax - 1) // ssymax
         c.stride = nj.mbwidth * nj.mbsizex * c.ssx // ssxmax
         if (((c.width < 3) and (c.ssx != ssxmax)) or ((c.height < 3) and (c.ssy != ssymax))):
-                raise Exception(NJ_UNSUPPORTED)
+                raise InvalidValueException(NJ_UNSUPPORTED)
         c.pixels = [0] * (c.stride * (nj.mbheight * nj.mbsizey * c.ssy // ssymax))
         i += 1
     if (nj.ncomp == 3):
@@ -580,9 +580,9 @@ def njDecodeDHT():
     while (nj.length >= 17):
         i = x(nj.spos[nj.pos])
         if (i & 0xEC):
-            raise Exception(NJ_SYNTAX_ERROR)
+            raise InvalidValueException(NJ_SYNTAX_ERROR)
         if (i & 0x02):
-            raise Exception(NJ_UNSUPPORTED)
+            raise InvalidValueException(NJ_UNSUPPORTED)
         i = (i | (i >> 3)) & 3  # combined DC/AC + tableid value
         for codelen in range(1, 17): # 1 to 16
             counts[codelen - 1] = x(nj.spos[nj.pos + codelen])
@@ -613,7 +613,7 @@ def njDecodeDHT():
             nj.vlctab[i][vlc].bits = 0
             vlc += 1
     if (nj.length):
-        raise Exception(NJ_SYNTAX_ERROR)
+        raise InvalidValueException(NJ_SYNTAX_ERROR)
 
 def njDecodeDQT():
     njDecodeLength()
@@ -631,7 +631,7 @@ def njDecodeDQT():
 def njDecodeDRI():
     njDecodeLength()
     if (nj.length < 2):
-        raise Exception(NJ_SYNTAX_ERROR)
+        raise NeedMoreException(NJ_SYNTAX_ERROR)
     nj.rstinterval = njDecode16(nj.pos)
     njSkip(nj.length)
 
@@ -685,23 +685,23 @@ def njDecodeScan():
     # nj_component_t* c;
     njDecodeLength()
     if (nj.length < (4 + 2 * nj.ncomp)):
-        raise Exception(NJ_SYNTAX_ERROR)
+        raise InvalidValueException(NJ_SYNTAX_ERROR)
     if (x(nj.spos[nj.pos]) != nj.ncomp):
-        raise Exception(NJ_UNSUPPORTED)
+        raise InvalidValueException(NJ_UNSUPPORTED)
     njSkip(1)
     i = 0
     while (i < nj.ncomp):
         c = nj.comp[i]
         if (x(nj.spos[nj.pos]) != c.cid):
-            raise Exception(NJ_SYNTAX_ERROR)
+            raise InvalidValueException(NJ_SYNTAX_ERROR)
         if (x(nj.spos[nj.pos + 1]) & 0xEE):
-            raise Exception(NJ_SYNTAX_ERROR)
+            raise InvalidValueException(NJ_SYNTAX_ERROR)
         c.dctabsel = x(nj.spos[nj.pos + 1]) >> 4
         c.actabsel = (x(nj.spos[nj.pos + 1]) & 1) | 2
         njSkip(2)
         i += 1
     if (x(nj.spos[nj.pos]) or (x(nj.spos[nj.pos + 1]) != 63) or x(nj.spos[nj.pos + 2])):
-        raise Exception(NJ_UNSUPPORTED)
+        raise InvalidValueException(NJ_UNSUPPORTED)
     njSkip(nj.length)
     mbx = 0
     mby = 0
@@ -729,7 +729,7 @@ def njDecodeScan():
             njByteAlign()
             i = njGetBits(16)
             if (((i & 0xFFF8) != 0xFFD0) or ((i & 7) != nextrst)):
-                raise Exception(NJ_SYNTAX_ERROR)
+                raise InvalidValueException(NJ_SYNTAX_ERROR)
             nextrst = (nextrst + 1) & 7
             rstcount = nj.rstinterval
             for i in range(3):
