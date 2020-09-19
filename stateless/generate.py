@@ -16,8 +16,8 @@ def logit(v):
 
 def new_byte(choices):
      v = random.choice(choices)
-     if isinstance(v, list): return v
-     return [v]
+     if isinstance(v, tuple): return v
+     return (v,)
 
 def backtrack(prev_bytes, all_choices):
     global SEEN_AT
@@ -38,7 +38,7 @@ def backtrack(prev_bytes, all_choices):
 def till_n_length_choices(my_choices, rs):
     all_choices = []
     for r in range(1, rs+1):
-        v = [i for i in itertools.product(my_choices, repeat=r)]
+        v = [tuple(i) for i in itertools.product(my_choices, repeat=r)]
         all_choices.extend(v)
     return all_choices
 
@@ -54,7 +54,7 @@ def generate(validate, prev_bytes=None):
             seen, prev_bytes, choices = backtrack(prev_bytes, all_choices)
 
         byte = new_byte(choices)
-        cur_bytes = prev_bytes + byte
+        cur_bytes = prev_bytes + list(byte)
         l_cur_bytes = len(cur_bytes)
 
         ib = MyBytearray(cur_bytes)
@@ -73,6 +73,8 @@ def generate(validate, prev_bytes=None):
             assert len(prev_bytes)- len(SEEN_AT) == 1
             SEEN_AT.append(seen)
             seen = set()
+
+            # reset this if it was modified by incorrect
             all_choices = SET_OF_BYTES
         elif rv == Status.Incorrect:
             seen.add(byte)
