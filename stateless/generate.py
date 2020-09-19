@@ -13,9 +13,12 @@ def init_set_of_bytes(s_bytes):
 def logit(v):
     print(v, file=sys.stderr)
 
-def new_byte(choices): return random.choice(choices)
+def new_byte(choices):
+     v = random.choice(choices)
+     if isinstance(v, list): return v
+     return [v]
 
-def backtrack(prev_bytes):
+def backtrack(prev_bytes, all_choices):
     global SEEN_AT
     if not prev_bytes:
         raise Exception('Cant backtrack beyond zero index')
@@ -26,22 +29,23 @@ def backtrack(prev_bytes):
     logit('backtracking %d %s' % (len(prev_bytes), last_byte))
     assert last_byte in seen
     prev_bytes = prev_bytes[:-1]
-    choices = [i for i in SET_OF_BYTES if i not in seen]
+    choices = [i for i in all_choices if i not in seen]
     if not choices:
-        return backtrack(prev_bytes)
+        return backtrack(prev_bytes, all_choices)
     return seen, prev_bytes, choices
 
 def generate(validate, prev_bytes=None):
     global SEEN_AT
+    all_choices = SET_OF_BYTES
     if prev_bytes is None: prev_bytes = []
     seen = set()
     while True:
-        choices = [i for i in SET_OF_BYTES if i not in seen]
+        choices = [i for i in all_choices if i not in seen]
         if not choices:
-            seen, prev_bytes, choices = backtrack(prev_bytes)
+            seen, prev_bytes, choices = backtrack(prev_bytes, all_choices)
 
         byte = new_byte(choices)
-        cur_bytes = prev_bytes + [byte]
+        cur_bytes = prev_bytes + byte
         l_cur_bytes = len(cur_bytes)
 
         ib = MyBytearray(cur_bytes)
@@ -50,7 +54,7 @@ def generate(validate, prev_bytes=None):
         #rv: Complete, Incomplete Incorrect
         #n: the index of the character -1 if not applicable
         #c: the character where error happened  "" if not applicable
-        rv, _n, _c = validate(ib)
+        rv, n, _c = validate(ib)
         if rv == Status.Complete:
             return ib
         elif rv == Status.Incomplete:
@@ -60,8 +64,14 @@ def generate(validate, prev_bytes=None):
             assert len(prev_bytes)- len(SEEN_AT) == 1
             SEEN_AT.append(seen)
             seen = set()
+            all_choices = SET_OF_BYTES
         elif rv == Status.Incorrect:
             seen.add(byte)
+            if n is None or n == -1:
+                continue
+            else:
+                r = len(cur_bytes) - n
+                all_choices = [i for i in itertools.combinations(SET_OF_BYTES, r)]
         else:
             raise Exception(rv)
     return None
