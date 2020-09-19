@@ -82,7 +82,9 @@ def generate(validate, prev_bytes=None):
                 continue
             else:
                 print(len(choices), len(seen))
-                seen = SEEN_AT[n]
+                if n < len(SEEN_AT):
+                    seen = SEEN_AT[n]
+                    SEEN_AT = SEEN_AT[:n]
                 seen.add(byte)
                 rs = len(cur_bytes) - n
                 all_choices = till_n_length_choices(SET_OF_BYTES, min(rs, 2))
