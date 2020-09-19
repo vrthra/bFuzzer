@@ -28,7 +28,7 @@ def backtrack(prev_bytes, all_choices):
     SEEN_AT = SEEN_AT[:-1]
     last_byte = prev_bytes[-1]
     logit('backtracking %d %s' % (len(prev_bytes), last_byte))
-    assert last_byte in seen
+    #assert (last_byte,) in seen
     prev_bytes = prev_bytes[:-1]
     choices = [i for i in all_choices if i not in seen]
     if not choices:
@@ -45,7 +45,7 @@ def till_n_length_choices(my_choices, rs):
 
 def generate(validate, prev_bytes=None):
     global SEEN_AT
-    all_choices = SET_OF_BYTES
+    all_choices = [(i,) for i in SET_OF_BYTES]
     if prev_bytes is None: prev_bytes = []
     seen = set()
     while True:
@@ -75,7 +75,7 @@ def generate(validate, prev_bytes=None):
             seen = set()
 
             # reset this if it was modified by incorrect
-            all_choices = SET_OF_BYTES
+            all_choices = [(i,) for i in SET_OF_BYTES]
         elif rv == Status.Incorrect:
             seen.add(byte)
             if n is None or n == -1:
