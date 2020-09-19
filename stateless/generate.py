@@ -1,4 +1,5 @@
 import sys
+import itertools
 import random
 from stateless.status import *
 from stateless.exceptions import *
@@ -33,6 +34,14 @@ def backtrack(prev_bytes, all_choices):
     if not choices:
         return backtrack(prev_bytes, all_choices)
     return seen, prev_bytes, choices
+
+def till_n_length_choices(my_choices, rs):
+    all_choices = []
+    for r in range(1, rs+1):
+        v = [i for i in itertools.product(my_choices, repeat=r)]
+        all_choices.extend(v)
+    return all_choices
+
 
 def generate(validate, prev_bytes=None):
     global SEEN_AT
@@ -70,8 +79,8 @@ def generate(validate, prev_bytes=None):
             if n is None or n == -1:
                 continue
             else:
-                r = len(cur_bytes) - n
-                all_choices = [i for i in itertools.combinations(SET_OF_BYTES, r)]
+                rs = len(cur_bytes) - n
+                all_choices = till_n_length_choices(SET_OF_BYTES, rs)
         else:
             raise Exception(rv)
     return None
