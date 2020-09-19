@@ -69,20 +69,24 @@ def generate(validate, prev_bytes=None):
         elif rv == Status.Incomplete:
             seen.add(byte)  # dont explore this byte again
             prev_bytes = cur_bytes
-            assert len(prev_bytes) >= len(SEEN_AT)
-            assert len(prev_bytes)- len(SEEN_AT) == 1
+            #assert len(prev_bytes) >= len(SEEN_AT)
+            #assert len(prev_bytes)- len(SEEN_AT) == 1
             SEEN_AT.append(seen)
             seen = set()
 
             # reset this if it was modified by incorrect
             all_choices = [(i,) for i in SET_OF_BYTES]
         elif rv == Status.Incorrect:
-            seen.add(byte)
             if n is None or n == -1:
+                seen.add(byte)
                 continue
             else:
+                print(len(choices), len(seen))
+                seen = SEEN_AT[n]
+                seen.add(byte)
                 rs = len(cur_bytes) - n
-                all_choices = till_n_length_choices(SET_OF_BYTES, rs)
+                all_choices = till_n_length_choices(SET_OF_BYTES, min(rs, 2))
+                prev_bytes = prev_bytes[:n]
         else:
             raise Exception(rv)
     return None
@@ -93,6 +97,11 @@ class MyBytearray:
 
     def __len__(self):
         return len(self.b)
+
+    def __eq__(self, o):
+        if isinstance(o, MyBytearray):
+            return self.b == o.b
+        return self.b == o
 
     def __getitem__(self, idx):
         if isinstance(idx, int):
