@@ -10,9 +10,9 @@ def validate(inputstr):
         if inputstr[1:3] != b'el':
             return Status.Incorrect, 1, None
         if inputstr[3] != b'l':
-            return Status.Incorrect, None, None
+            return Status.Incorrect, 3, None
         if inputstr[4] != b'o':
-            return Status.Incorrect, None, None
+            return Status.Incorrect, 4, None
         return Status.Complete, None, None
     except G.NeedMoreException as e:
         return Status.Incomplete, None, None
