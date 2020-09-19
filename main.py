@@ -1,6 +1,5 @@
 import stateless.generate as G
-import examples.nanojpeg as decoder
-#import examples.hellodecoder as decoder
+import examples.hellodecoder as decoder
 
 G.init_set_of_bytes([i for i in range(256)])
 
