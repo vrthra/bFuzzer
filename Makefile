@@ -1,8 +1,8 @@
 run:
-	env LC_ALL=C python3 main.py
+	env LC_ALL=C python3 main.py 10
 
 drun:
-	env LC_ALL=C python3 -m pudb main.py
+	env LC_ALL=C python3 -m pudb main.py 10
 
 
 clean:
