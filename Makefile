@@ -1,5 +1,5 @@
 run:
-	python3 main.py
+	env LC_ALL=C python3 main.py
 
 drun:
 	env LC_ALL=C python3 -m pudb main.py
