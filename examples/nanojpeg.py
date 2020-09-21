@@ -473,12 +473,12 @@ def njShowBits(bits):
                     nj.size = 0
                 elif marker != 0:
                     if ((marker & 0xF8) != 0xD0):
-                        raise Exception(NJ_SYNTAX_ERROR)
+                        raise InvalidValueException(NJ_SYNTAX_ERROR)
                     else:
                         nj.buf = (nj.buf << 8) | marker
                         nj.bufbits += 8
             else:
-                raise Exception(NJ_SYNTAX_ERROR)
+                raise InvalidValueException(NJ_SYNTAX_ERROR)
     nj.buf = nj.buf & ((1 << nj.bufbits) - 1)
     return (nj.buf >> (nj.bufbits - bits)) & ((1 << bits) - 1)
 
@@ -595,10 +595,10 @@ def njDecodeDHT():
             currcnt = counts[codelen - 1]
             if not currcnt: continue
             if (nj.length < currcnt):
-                raise Exception(NJ_SYNTAX_ERROR)
+                raise InvalidValueException(NJ_SYNTAX_ERROR)
             remain -= currcnt << (16 - codelen)
             if (remain < 0):
-                raise Exception(NJ_SYNTAX_ERROR)
+                raise InvalidValueException(NJ_SYNTAX_ERROR)
             for ii in range(currcnt):
                 code = x(nj.spos[nj.pos + ii])
                 j = spread
@@ -620,18 +620,18 @@ def njDecodeDQT():
     while (nj.length >= 65):
         i = x(nj.spos[nj.pos])
         if (i & 0xFC):
-            raise Exception(NJ_SYNTAX_ERROR)
+            raise InvalidValueException(NJ_SYNTAX_ERROR)
         nj.qtavail |= 1 << i
         for j in range(64):
             nj.qtab[i][j] = x(nj.spos[nj.pos + j + 1])
         njSkip(65)
     if (nj.length):
-        raise Exception(NJ_SYNTAX_ERROR)
+        raise InvalidValueException(NJ_SYNTAX_ERROR)
 
 def njDecodeDRI():
     njDecodeLength()
     if (nj.length < 2):
-        raise NeedMoreException(NJ_SYNTAX_ERROR)
+        raise InvalidValueException(NJ_SYNTAX_ERROR)
     nj.rstinterval = njDecode16(nj.pos)
     njSkip(nj.length)
 
@@ -640,7 +640,7 @@ def njGetVLC(vlc, code):
     value = njShowBits(16)
     bits = vlc[value].bits
     if not bits:
-        raise Exception(NJ_SYNTAX_ERROR)
+        raise InvalidValueException(NJ_SYNTAX_ERROR)
     njSkipBits(bits)
     value = vlc[value].code
     if code: code[0] = value
@@ -665,10 +665,10 @@ def njDecodeBlock(c, sout, out):
         value = njGetVLC(nj.vlctab[c.actabsel], code);
         if not code[0]: break  # EOB
         if (not (code[0] & 0x0F) and (code[0] != 0xF0)):
-            raise Exception(NJ_SYNTAX_ERROR)
+            raise InvalidValueException(NJ_SYNTAX_ERROR)
         coef += (code[0] >> 4) + 1
         if coef > 63:
-            raise Exception(NJ_SYNTAX_ERROR)
+            raise InvalidValueException(NJ_SYNTAX_ERROR)
         nj.block[njZZ[coef]] = value * nj.qtab[c.qtsel][coef]
         # } while (coef < 63);
         if coef >= 63: break
@@ -846,7 +846,7 @@ def njConvert():
             if ((c.width < nj.width) or (c.height < nj.height)):
                 njUpsample(c)
         if ((c.width < nj.width) or (c.height < nj.height)):
-            raise Exception(NJ_INTERNAL_ERR)
+            raise InvalidValueException(NJ_INTERNAL_ERR)
             return
     if nj.ncomp == 3:
         # convert to RGB
