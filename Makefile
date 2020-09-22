@@ -1,8 +1,10 @@
+V=examples/hellodecoder.py
+
 run:
-	env LC_ALL=C python3 main.py 10
+	env LC_ALL=C python3 main.py $(V)
 
 drun:
-	env LC_ALL=C python3 -m pudb main.py 10
+	env LC_ALL=C python3 -m pudb main.py $(V)
 
 
 clean:
