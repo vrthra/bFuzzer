@@ -35,12 +35,25 @@ def backtrack(prev_bytes, all_choices):
         return backtrack(prev_bytes, all_choices)
     return seen, prev_bytes, choices
 
-def till_n_length_choices(my_choices, rs):
-    all_choices = []
+REPEAT=[0,0,0]
+REPEAT[0] = [i for i in itertools.product(SET_OF_BYTES, repeat=0)]
+REPEAT[1] = [i for i in itertools.product(SET_OF_BYTES, repeat=1)]
+REPEAT[2] = [i for i in itertools.product(SET_OF_BYTES, repeat=2)]
+for i in range(3):
+    random.shuffle(REPEAT[i])
+
+
+def shortest_correction(my_choices, seen, rs, prev_bytes, validate):
     for r in range(1, rs+1):
-        v = [tuple(i) for i in itertools.product(my_choices, repeat=r)]
-        all_choices.extend(v)
-    return all_choices
+        v = [i for i in REPEAT[r] if i not in seen]
+        seen_ = set()
+        for bs in v:
+            seen_.add(bs)
+            ib = MyBytearray(prev_bytes + list(bs))
+            rv, n, _c = validate(ib)
+            if rv == Status.Incorrect:
+                return v, list(bs), seen_
+    return None, None, None
 
 
 def generate(validate, prev_bytes=None):
@@ -87,8 +100,9 @@ def generate(validate, prev_bytes=None):
                     SEEN_AT = SEEN_AT[:n]
                 seen.add(byte)
                 rs = len(cur_bytes) - n
-                all_choices = till_n_length_choices(SET_OF_BYTES, min(rs, 2))
-                prev_bytes = prev_bytes[:n]
+                all_choices, correction, seen_ = shortest_correction(SET_OF_BYTES, seen, min(rs, 2), prev_bytes, validate)
+                seen |= seen_
+                prev_bytes = prev_bytes[:n] + correction
         else:
             raise Exception(rv)
     return None
