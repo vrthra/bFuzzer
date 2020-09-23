@@ -39,6 +39,7 @@ def till_n_length_choices(my_choices, rs):
     all_choices = []
     for r in range(1, rs+1):
         v = [tuple(i) for i in itertools.product(my_choices, repeat=r)]
+        random.shuffle(v)
         all_choices.extend(v)
     return all_choices
 
