@@ -70,7 +70,7 @@ int int_val;
 char id_name[100];
 
 void syntax_error() { fprintf(stderr, "syntax error\n"); exit(1); }
-void eof_error() { fprintf(stderr, "EOF error\n"); exit(1); }
+void eof_error() { fprintf(stderr, "EOF error\n"); exit(-1); }
 void next_ch() { ch = getc(v); }
 
 void next_sym()
