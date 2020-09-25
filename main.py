@@ -1,4 +1,5 @@
 import stateless.generate as G
+import random
 
 G.init_set_of_bytes([i for i in range(256)])
 
@@ -12,8 +13,10 @@ def create_valid_inputs(validator, n=1):
             with open('file.x', 'wb+') as f:
                 f.write(created_bits.b)
             i += 1
-            if (i >= n):
-                break
+            if random.randint(0,10) > 2:
+                parray = [i for i in created_bits.b]
+                continue
+            if (i >= n): break
 
 if __name__ == "__main__":
     import importlib.util

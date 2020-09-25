@@ -82,7 +82,7 @@ def generate(validate, prev_bytes=None):
                 seen.add(byte)
                 continue
             else:
-                print(len(choices), len(seen))
+                logit("%s %s" % (len(choices), len(seen)))
                 if n < len(SEEN_AT):
                     seen = SEEN_AT[n]
                     SEEN_AT = SEEN_AT[:n]
