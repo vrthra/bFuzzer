@@ -13016,11 +13016,13 @@ clean:
 #define MAX_TOKS_IN_EXPR 40
 #endif
 
+
 #define FAIL_ERR(p, code)                                                      \
   do {                                                                         \
     mjs_set_errorf(p->mjs, code, "parse error at line %d: [%.*s]", p->line_no, \
                    10, p->tok.ptr);                                            \
     mjs_print_error(p->mjs, stdout, NULL, 1 /* print_stack_trace */);             \
+    if (strlen(p->tok.ptr) == 0) { exit(-1); } else {exit(1);} \
     exit(EXIT_FAILURE);                                                        \
                        /*return code;*/                                                               \
   } while (0)
