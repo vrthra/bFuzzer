@@ -1,7 +1,10 @@
+import os
 import stateless.generate as G
 import random
 
 G.init_set_of_bytes([i for i in range(256)])
+
+FNAME = 'file.x'
 
 def create_valid_inputs(validator, n=1):
     i = 0
@@ -10,7 +13,7 @@ def create_valid_inputs(validator, n=1):
         created_bits = G.generate(validator.validate, parray)
         if created_bits is not None:
             print(repr(created_bits), file=sys.stderr)
-            with open('file.x', 'wb+') as f:
+            with open(FNAME, 'wb+') as f:
                 f.write(created_bits.b)
             i += 1
             if random.randint(0,10) > 2:
@@ -22,6 +25,7 @@ if __name__ == "__main__":
     import importlib.util
     import sys
     my_module = sys.argv[1]
+    FNAME = os.path.basename(my_module) + '.values'
     spec = importlib.util.spec_from_file_location("decoder", my_module)
     my_decoder = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(my_decoder)
