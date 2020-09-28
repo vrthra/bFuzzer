@@ -15,7 +15,7 @@ def validate(input_str):
         cmd = "./examples/tiny/tiny %s" % f.name
         res = os.system(cmd)
         res = os.WEXITSTATUS(res)
-        res = (256-res) * (-1) if res > 127 else res # short conversion
+        res = (256-res) if res > 127 else res # short conversion
         if res == 1:
             return Status.Incorrect, None, None
         elif res == -1:
