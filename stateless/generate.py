@@ -4,6 +4,8 @@ import random
 from stateless.status import *
 from stateless.exceptions import *
 
+ITERATION_LIMIT=10000
+
 SET_OF_BYTES = [i for i in range(256)]
 SEEN_AT = []
 
@@ -49,7 +51,9 @@ def generate(validate, prev_bytes=None):
     all_choices = [(i,) for i in SET_OF_BYTES]
     if prev_bytes is None: prev_bytes = []
     seen = set()
-    while True:
+    iter_limit = ITERATION_LIMIT
+    while iter_limit:
+        iter_limit -= 1
         choices = [i for i in all_choices if i not in seen]
         if not choices:
             seen, prev_bytes, choices = backtrack(prev_bytes, all_choices)
