@@ -5,6 +5,12 @@
 
 #include "csvparser.h"
 
+
+/* 0  - Valid
+ * -1 - incomplete
+ *  1 - incorrect
+ * */
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -252,7 +258,7 @@ int main(int argc, char** argv) {
     v = fopen(argv[1], "r");
 
     char* string = read_input();
-    printf(string);
+    printf("%s", string);
     fclose(v);
     int i =  0;
     //                                   file, delimiter, first_line_is_header?
