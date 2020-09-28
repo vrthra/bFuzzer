@@ -7,6 +7,11 @@ https://github.com/benhoyt/inih
 
 */
 
+/* 0  - Valid
+ * -1 - incomplete
+ *  1 - incorrect
+ * */
+
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_WARNINGS)
 #define _CRT_SECURE_NO_WARNINGS
 #endif
@@ -177,7 +182,7 @@ int ini_parse_stream(ini_reader reader, void* stream, ini_handler handler,
                 error = lineno;
                 // Missing cloding square bracket:
                 printf("2");
-                exit(2);
+                exit(-1);
                 
             }
         }
@@ -209,7 +214,7 @@ int ini_parse_stream(ini_reader reader, void* stream, ini_handler handler,
                 error = lineno;
                 // Invalid line:
                 printf("4");
-                exit(8);
+                exit(1); // incorrect value found
             }
         }
 
@@ -305,7 +310,7 @@ char* read_input() {
     char c = 0;
     while((c = fgetc(v)) != EOF){
         if (counter == 1000) {
-            exit(1);
+            exit(-1);
         }
         chars[counter++] = c;
     }
