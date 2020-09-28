@@ -161,6 +161,7 @@ CsvRow *_CsvParser_getRow(CsvParser *csvParser) {
         }
         if (endOfFileIndicator) {
             if (currFieldCharIter == 0 && fieldIter == 0) {
+                exit(0);
                 _CsvParser_setErrorMessage(csvParser, "Reached EOF");
                 return NULL;
             }
