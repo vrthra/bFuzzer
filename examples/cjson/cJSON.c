@@ -705,8 +705,15 @@ static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_bu
     /* not a string */
     if (buffer_at_offset(input_buffer)[0] != '\"')
     {
+        if (buffer_at_offset(input_buffer)[0] == NULL)
+        {
+            printf("Need more chars 003.\n");
+            exit(-1);
+            goto fail;
+        }
         goto fail;
     }
+
 
     {
         /* calculate approximate size of the output (overestimate) */
@@ -729,6 +736,8 @@ static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_bu
         }
         if (((size_t)(input_end - input_buffer->content) >= input_buffer->length) || (*input_end != '\"'))
         {
+            printf("Need more chars.\n");
+            exit(-1);
             goto fail; /* string ended unexpectedly */
         }
 
@@ -1216,6 +1225,13 @@ static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buf
         return false; /* no input */
     }
 
+    if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] == NULL))
+    {
+        printf("Need more chars 001.\n");
+        exit(-1);
+        return false; /* no input */
+    }
+
     /* parse the different types of values */
     /* null */
     if (can_read(input_buffer, 4) && (strncmp((const char*)buffer_at_offset(input_buffer), "null", 4) == 0))
@@ -1409,6 +1425,8 @@ static cJSON_bool parse_array(cJSON * const item, parse_buffer * const input_buf
 
     if (cannot_access_at_index(input_buffer, 0) || buffer_at_offset(input_buffer)[0] != ']')
     {
+        printf("Need more chars.\n");
+        exit(-1);
         goto fail; /* expected end of array */
     }
 
@@ -1581,6 +1599,8 @@ static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_bu
 
     if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] != '}'))
     {
+        printf("Need more chars.\n");
+        exit(-1);
         goto fail; /* expected end of object */
     }
 
@@ -2960,6 +2980,7 @@ int main(int argc, char** argv) {
         exit(1);
     }
     //printf(cJSON_Print(json));
+    exit(0);
 
 }
 
