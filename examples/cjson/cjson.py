@@ -8,7 +8,7 @@ def validate(input_str):
     with tempfile.NamedTemporaryFile() as f:
         f.write(input_str.b)
         f.flush()
-        cmd = "./examples/cjson/cjson -f %s" % f.name
+        cmd = "./examples/cjson/cjson %s" % f.name
         res = os.system(cmd)
         res = os.WEXITSTATUS(res)
         res = (256-res) * (-1) if res > 127 else res # short conversion
