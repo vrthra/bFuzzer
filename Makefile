@@ -1,4 +1,4 @@
-src=examples/cjson/ examples/csv/ examples/ini/ examples/mjs/ examples/tiny/
+SRC=examples/cjson/ examples/csv/ examples/ini/ examples/mjs/ examples/tiny/
 V=examples/hellodecoder.py
 
 run:
