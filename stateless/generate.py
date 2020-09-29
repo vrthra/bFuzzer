@@ -5,6 +5,7 @@ from stateless.status import *
 from stateless.exceptions import *
 
 ITERATION_LIMIT=10000
+INPUT_LIMIT=1000
 
 SET_OF_BYTES = [i for i in range(256)]
 SEEN_AT = []
@@ -53,6 +54,9 @@ def generate(validate, prev_bytes=None):
     seen = set()
     iter_limit = ITERATION_LIMIT
     while iter_limit:
+        if len(prev_bytes) > INPUT_LIMIT:
+            raise Exception('Exhausted %d bytes' % INPUT_LIMIT)
+            return None
         iter_limit -= 1
         choices = [i for i in all_choices if i not in seen]
         if not choices:
@@ -96,7 +100,7 @@ def generate(validate, prev_bytes=None):
                 prev_bytes = prev_bytes[:n]
         else:
             raise Exception(rv)
-    return None
+    raise Exception('Exhausted %d loops' % ITERATION_LIMIT)
 
 class MyBytearray:
     def __init__(self, int_arr):
