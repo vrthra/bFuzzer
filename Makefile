@@ -15,3 +15,17 @@ clean:
 compile:
 	for i in $(SRC); do (cd $$i; make); done
 
+cjson:
+	make run V=examples/cjson/cjson.py
+
+csv:
+	make run V=examples/csv/csvparser.py
+
+ini:
+	make run V=examples/ini/ini.py
+
+tiny:
+	make run V=examples/tiny/tinyc.py
+
+
+
