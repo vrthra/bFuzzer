@@ -10,3 +10,6 @@ drun:
 clean:
 	find . -name __pycache__ -type d -print0 -prune | xargs -0 -- rm -r
 
+compile:
+	for i in examples/cjson/ examples/csv/ examples/ini/ examples/mjs/ examples/tiny/; \
+		do (cd $$i; make); done
