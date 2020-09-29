@@ -1,3 +1,4 @@
+src=examples/cjson/ examples/csv/ examples/ini/ examples/mjs/ examples/tiny/
 V=examples/hellodecoder.py
 
 run:
@@ -9,7 +10,8 @@ drun:
 
 clean:
 	find . -name __pycache__ -type d -print0 -prune | xargs -0 -- rm -r
+	for i in $(SRC); do (cd $$i; make clean); done
 
 compile:
-	for i in examples/cjson/ examples/csv/ examples/ini/ examples/mjs/ examples/tiny/; \
-		do (cd $$i; make); done
+	for i in $(SRC); do (cd $$i; make); done
+
