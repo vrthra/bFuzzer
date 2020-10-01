@@ -32,7 +32,7 @@ def run_for(validator, name, secs=None):
     if secs is None:
         secs = 10
     lst_generated = []
-    with open('results_%s.json' % name, 'a+') as f:
+    with open('x_results_%s.json' % name, 'a+') as f:
         while (time.time() - start) < secs:
             i = valid_input(validator)
             c = validator.get_cumulative_coverage(i)
@@ -49,7 +49,6 @@ if __name__ == "__main__":
     import sys
     my_module = sys.argv[1]
     name = os.path.basename(my_module)
-    FNAME =  name + '.values'
     spec = importlib.util.spec_from_file_location("decoder", my_module)
     my_decoder = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(my_decoder)
