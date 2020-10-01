@@ -38,3 +38,13 @@ pFuzz:
 	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov pfuzzer/tiny.py
 
 
+simple:
+	$(MAKE) clean
+	$(MAKE) compile
+	env LC_ALL=C python3 check_inputs.py examples/cjson/cjson.cov simplechains/cjson.py
+	env LC_ALL=C python3 check_inputs.py examples/csv/csvparser.cov simplechains/csvparser.py
+	env LC_ALL=C python3 check_inputs.py examples/ini/ini.cov simplechains/ini.py
+	env LC_ALL=C python3 check_inputs.py examples/mjs/mjs.cov simplechains/mjs.py
+	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov simplechains/tiny.py
+
+
