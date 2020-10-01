@@ -24,7 +24,7 @@ def new_byte(choices):
 def backtrack(prev_bytes, all_choices):
     global SEEN_AT
     if not prev_bytes:
-        raise Exception('Cant backtrack beyond zero index')
+        raise BacktrackLimitException('Cant backtrack beyond zero index')
     # backtrack one byte
     seen = SEEN_AT[len(prev_bytes)-1]
     SEEN_AT = SEEN_AT[:-1]
@@ -53,7 +53,7 @@ def generate(validator, prev_bytes=None):
     iter_limit = ITERATION_LIMIT
     while iter_limit:
         if len(prev_bytes) > INPUT_LIMIT:
-            raise Exception('Exhausted %d bytes' % INPUT_LIMIT)
+            raise InputLimitException('Exhausted %d bytes' % INPUT_LIMIT)
         iter_limit -= 1
         choices = [i for i in all_choices if i not in seen]
         if not choices:
@@ -93,4 +93,4 @@ def generate(validator, prev_bytes=None):
                 prev_bytes = prev_bytes[:n]
         else:
             raise Exception(rv)
-    raise Exception('Exhausted %d loops' % ITERATION_LIMIT)
+    raise IterationLimitException('Exhausted %d loops' % ITERATION_LIMIT)
