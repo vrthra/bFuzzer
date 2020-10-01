@@ -1,8 +1,10 @@
 import os
 import stateless.generate as G
+import stateless.exceptions as E
 import random
 import time
 import json
+import sys
 
 G.init_set_of_bytes([bytes([i]) for i in range(256)])
 
@@ -12,9 +14,18 @@ def valid_input(validator):
         created_bits = None
         try:
             created_bits = G.generate(validator, parray)
-        except Exception as e:
+        except E.InputLimitException as e:
             print(str(e))
+            G.SEEN_AT.clear()
             continue
+        except E.IterationLimitException as e:
+            print(str(e))
+            G.SEEN_AT.clear()
+            continue
+        except E.BacktrackLimitException as e:
+            print(str(e))
+            G.SEEN_AT.clear()
+            sys.exit(-1)
         print(repr(created_bits), file=sys.stderr)
         if len(created_bits) < 3 and random.randint(0,10) > 1:
             parray = created_bits
@@ -24,6 +35,7 @@ def valid_input(validator):
             continue
         if created_bits is None:
             continue
+        G.SEEN_AT.clear()
         return created_bits
 
 
@@ -43,7 +55,7 @@ def run_for(validator, name, secs=None):
                   file=f, flush=True)
     return lst_generated
 
-time_to_run = 10
+time_to_run = 1
 if __name__ == "__main__":
     import importlib.util
     import sys

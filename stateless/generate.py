@@ -4,7 +4,7 @@ import random
 from stateless.status import *
 from stateless.exceptions import *
 
-ITERATION_LIMIT=10000
+ITERATION_LIMIT=(256*256 + 10000)
 INPUT_LIMIT=1000
 
 SET_OF_BYTES = [bytes([i]) for i in range(256)]
@@ -41,7 +41,7 @@ def till_n_length_choices(my_choices, rs):
     all_choices = []
     for r in range(1, rs+1):
         v = [bytes(i) for i in itertools.product(my_choices, repeat=r)]
-        random.shuffle(v)
+        #random.shuffle(v)
         all_choices.extend(v)
     return all_choices
 
