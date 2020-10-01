@@ -232,7 +232,6 @@ void _CsvParser_setErrorMessage(CsvParser *csvParser, const char *errorMessage) 
     int errMsgLen = strlen(errorMessage);
     csvParser->errMsg_ = (char*)malloc(errMsgLen + 1);
     strcpy(csvParser->errMsg_, errorMessage);
-    exit(1);
 }
 
 const char *CsvParser_getErrorMessage(CsvParser *csvParser) {

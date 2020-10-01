@@ -7,7 +7,7 @@ from stateless.exceptions import *
 ITERATION_LIMIT=10000
 INPUT_LIMIT=1000
 
-SET_OF_BYTES = [i for i in range(256)]
+SET_OF_BYTES = [bytes([i]) for i in range(256)]
 SEEN_AT = []
 
 def init_set_of_bytes(s_bytes):
@@ -18,9 +18,8 @@ def logit(v):
     print(v, file=sys.stderr)
 
 def new_byte(choices):
-     v = random.choice(choices)
-     if isinstance(v, tuple): return v
-     return (v,)
+    v = random.choice(choices)
+    return v
 
 def backtrack(prev_bytes, all_choices):
     global SEEN_AT
@@ -41,55 +40,49 @@ def backtrack(prev_bytes, all_choices):
 def till_n_length_choices(my_choices, rs):
     all_choices = []
     for r in range(1, rs+1):
-        v = [tuple(i) for i in itertools.product(my_choices, repeat=r)]
+        v = [bytes(i) for i in itertools.product(my_choices, repeat=r)]
         random.shuffle(v)
         all_choices.extend(v)
     return all_choices
 
-
-def generate(validate, prev_bytes=None):
+def generate(validator, prev_bytes=None):
     global SEEN_AT
-    all_choices = [(i,) for i in SET_OF_BYTES]
-    if prev_bytes is None: prev_bytes = []
+    all_choices = SET_OF_BYTES
+    if prev_bytes is None: prev_bytes = b''
     seen = set()
     iter_limit = ITERATION_LIMIT
     while iter_limit:
         if len(prev_bytes) > INPUT_LIMIT:
             raise Exception('Exhausted %d bytes' % INPUT_LIMIT)
-            return None
         iter_limit -= 1
         choices = [i for i in all_choices if i not in seen]
         if not choices:
+            raise Exception('Backtrack disabled.')
             seen, prev_bytes, choices = backtrack(prev_bytes, all_choices)
 
         byte = new_byte(choices)
-        cur_bytes = prev_bytes + list(byte)
+        cur_bytes = prev_bytes + byte
         l_cur_bytes = len(cur_bytes)
 
-        ib = MyBytearray(cur_bytes)
-        logit('%s..%s, %s' % (ib.b[0:20], ib.b[-10:], len(ib.b)))
+        logit('%s %s' % (cur_bytes, len(cur_bytes)))
 
-        #rv: Complete, Incomplete Incorrect
-        #n: the index of the character -1 if not applicable
-        #c: the character where error happened  "" if not applicable
-        rv, n, _c = validate(ib)
+        rv, n = validator.validate(cur_bytes)
         if rv == Status.Complete:
-            return ib
+            return cur_bytes
         elif rv == Status.Incomplete:
             seen.add(byte)  # dont explore this byte again
             prev_bytes = cur_bytes
-            #assert len(prev_bytes) >= len(SEEN_AT)
-            #assert len(prev_bytes)- len(SEEN_AT) == 1
             SEEN_AT.append(seen)
             seen = set()
 
             # reset this if it was modified by incorrect
-            all_choices = [(i,) for i in SET_OF_BYTES]
+            all_choices = SET_OF_BYTES
         elif rv == Status.Incorrect:
             if n is None or n == -1:
                 seen.add(byte)
                 continue
             else:
+                raise Exception('Backtrack disabled..')
                 logit("%s %s" % (len(choices), len(seen)))
                 if n < len(SEEN_AT):
                     seen = SEEN_AT[n]
@@ -101,33 +94,3 @@ def generate(validate, prev_bytes=None):
         else:
             raise Exception(rv)
     raise Exception('Exhausted %d loops' % ITERATION_LIMIT)
-
-class MyBytearray:
-    def __init__(self, int_arr):
-        self.b = bytearray(int_arr)
-
-    def __len__(self):
-        return len(self.b)
-
-    def __eq__(self, o):
-        if isinstance(o, MyBytearray):
-            return self.b == o.b
-        return self.b == o
-
-    def __getitem__(self, idx):
-        if isinstance(idx, int):
-            if len(self.b) <= idx:
-                raise NeedMoreException()
-            return bytes([self.b[idx]])
-        elif isinstance(idx, slice):
-            if idx.start >= len(self.b):
-                raise NeedMoreException()
-            if idx.stop is not None and idx.stop > len(self.b):
-                raise NeedMoreException()
-            return MyBytearray(self.b[idx])
-        else:
-            assert False, idx
-
-    def __repr__(self):
-        return 'MyBytearray[%s]' % repr(self.b)
-

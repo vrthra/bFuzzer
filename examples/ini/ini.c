@@ -214,7 +214,7 @@ int ini_parse_stream(ini_reader reader, void* stream, ini_handler handler,
                 error = lineno;
                 // Invalid line:
                 printf("4");
-                exit(1); // incorrect value found
+                exit(-1); // incorrect value found <- not incorrect. It will continue with `:`
             }
         }
 
