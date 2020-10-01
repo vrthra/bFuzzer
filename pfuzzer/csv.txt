@@ -1,0 +1,303 @@
+Time used until input was generated: 3.861421
+'N'
+
+Time used until input was generated: 11.876098
+'64v'
+
+Time used until input was generated: 19.482366
+'6)'
+
+Time used until input was generated: 23.676361
+'"('
+
+Time used until input was generated: 32.901966
+'1@'
+
+Time used until input was generated: 41.104192
+'5p'
+
+Time used until input was generated: 44.684583
+'\n'
+
+Time used until input was generated: 48.937330
+','
+
+Time used until input was generated: 56.918437
+'0p'
+
+Time used until input was generated: 64.749628
+'2d'
+
+Time used until input was generated: 68.987684
+'\rX'
+
+Time used until input was generated: 76.988457
+'3Q'
+
+Time used until input was generated: 84.338941
+'4.'
+
+Time used until input was generated: 91.918810
+'-~'
+
+Time used until input was generated: 99.462509
+'H`'
+
+Time used until input was generated: 106.282560
+'M:'
+
+Time used until input was generated: 113.196716
+'eq'
+
+Time used until input was generated: 121.106138
+'9}'
+
+Time used until input was generated: 128.617897
+'U.'
+
+Time used until input was generated: 135.902417
+'/E'
+
+Time used until input was generated: 143.306263
+'B '
+
+Time used until input was generated: 150.870541
+'z\x0b'
+
+Time used until input was generated: 161.842754
+'q\\'
+
+Time used until input was generated: 173.968050
+'nj'
+
+Time used until input was generated: 185.739739
+'\x0b>'
+
+Time used until input was generated: 194.089726
+'>C'
+
+Time used until input was generated: 201.855447
+'!U'
+
+Time used until input was generated: 208.970340
+'Pz'
+
+Time used until input was generated: 216.965574
+':a'
+
+Time used until input was generated: 224.822624
+'&f'
+
+Time used until input was generated: 232.333126
+'~8'
+
+Time used until input was generated: 239.892359
+'|Q'
+
+Time used until input was generated: 246.894914
+'Cn'
+
+Time used until input was generated: 254.863338
+'~d'
+
+Time used until input was generated: 264.632956
+'7S'
+
+Time used until input was generated: 275.156808
+'yN'
+
+Time used until input was generated: 282.998485
+'%O'
+
+Time used until input was generated: 290.050526
+'\t['
+
+Time used until input was generated: 298.586742
+'xE'
+
+Time used until input was generated: 307.518006
+'S)'
+
+Time used until input was generated: 316.266615
+'rt'
+
+Time used until input was generated: 325.515845
+'\x0ck'
+
+Time used until input was generated: 334.058630
+'PL'
+
+Time used until input was generated: 343.295794
+'p{'
+
+Time used until input was generated: 350.823397
+'pL'
+
+Time used until input was generated: 357.952129
+'=t'
+
+Time used until input was generated: 364.848660
+'J+'
+
+Time used until input was generated: 372.794734
+'Dt'
+
+Time used until input was generated: 379.843730
+'o`'
+
+Time used until input was generated: 386.077247
+'sL'
+
+Time used until input was generated: 392.798249
+'Zl'
+
+Time used until input was generated: 399.649219
+'Z='
+
+Time used until input was generated: 407.257868
+'d;'
+
+Time used until input was generated: 413.363432
+'p9'
+
+Time used until input was generated: 420.227976
+'NX'
+
+Time used until input was generated: 426.826731
+'o^'
+
+Time used until input was generated: 434.123810
+'{b'
+
+Time used until input was generated: 441.233550
+'TC'
+
+Time used until input was generated: 447.624657
+'@/'
+
+Time used until input was generated: 454.838129
+'>('
+
+Time used until input was generated: 463.174687
+'Be'
+
+Time used until input was generated: 472.504952
+')]'
+
+Time used until input was generated: 479.826575
+'sF'
+
+Time used until input was generated: 487.426481
+'^p'
+
+Time used until input was generated: 495.189619
+'%~'
+
+Time used until input was generated: 501.618360
+'g%'
+
+Time used until input was generated: 508.115470
+'v}'
+
+Time used until input was generated: 514.271840
+'\\A'
+
+Time used until input was generated: 520.862374
+'hc'
+
+Time used until input was generated: 527.059325
+'sn'
+
+Time used until input was generated: 532.335529
+'R;'
+
+Time used until input was generated: 539.120620
+'bI'
+
+Time used until input was generated: 548.052738
+'\\&'
+
+Time used until input was generated: 558.653873
+'F?'
+
+Time used until input was generated: 565.826923
+'&o'
+
+Time used until input was generated: 573.014716
+'>+'
+
+Time used until input was generated: 581.985516
+'V('
+
+Time used until input was generated: 590.236966
+'9{'
+
+Time used until input was generated: 598.882029
+'Z>'
+
+Time used until input was generated: 607.131834
+'Xl'
+
+Time used until input was generated: 616.779634
+'#O'
+
+Time used until input was generated: 624.461250
+'|9'
+
+Time used until input was generated: 631.148068
+'OX'
+
+Time used until input was generated: 638.819360
+'MF'
+
+Time used until input was generated: 645.169957
+'+Y'
+
+Time used until input was generated: 651.590186
+'*s'
+
+Time used until input was generated: 658.671796
+'ZP'
+
+Time used until input was generated: 664.689189
+'p&'
+
+Time used until input was generated: 671.964283
+'s\x0c'
+
+Time used until input was generated: 678.359004
+'.)'
+
+Time used until input was generated: 685.482403
+'Uc'
+
+Time used until input was generated: 692.388277
+'OF'
+
+Time used until input was generated: 698.950542
+'b/'
+
+Time used until input was generated: 705.782265
+'j9'
+
+Time used until input was generated: 712.916289
+'nc'
+
+Time used until input was generated: 720.902670
+'\t@'
+
+Time used until input was generated: 727.754378
+'8l'
+
+Time used until input was generated: 734.730425
+'{q'
+
+Time used until input was generated: 741.733711
+'f\t'
+
+Time used until input was generated: 748.522817
+':r'
+
+Time used until input was generated: 755.510525
+'gA'
+

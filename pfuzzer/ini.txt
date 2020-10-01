@@ -1,0 +1,18 @@
+Time used until input was generated: 13.797923
+' '
+
+Time used until input was generated: 33.928905
+'\n'
+
+Time used until input was generated: 43.449429
+':'
+
+Time used until input was generated: 50.102913
+'='
+
+Time used until input was generated: 69.978871
+';S'
+
+Time used until input was generated: 76.643049
+'#\\'
+

@@ -1,0 +1,24 @@
+Time used until input was generated: 20.669642
+'6;'
+
+Time used until input was generated: 573.685156
+'6+x+(14);'
+
+Time used until input was generated: 686.449382
+'6<5;'
+
+Time used until input was generated: 846.155843
+'6+x\n;'
+
+Time used until input was generated: 857.525512
+'6<5-14;'
+
+Time used until input was generated: 868.996667
+'6+x+(p);'
+
+Time used until input was generated: 880.840498
+';'
+
+Time used until input was generated: 1192.871277
+'while (5);'
+

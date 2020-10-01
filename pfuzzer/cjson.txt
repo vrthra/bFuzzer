@@ -1,0 +1,51 @@
+Time used until input was generated: 29.484471
+'1'
+
+Time used until input was generated: 36.729709
+'5'
+
+Time used until input was generated: 40.726871
+'0'
+
+Time used until input was generated: 44.421923
+'4'
+
+Time used until input was generated: 50.708209
+'false'
+
+Time used until input was generated: 53.764595
+'true'
+
+Time used until input was generated: 56.682711
+'null'
+
+Time used until input was generated: 93.776542
+'6'
+
+Time used until input was generated: 97.122349
+'7'
+
+Time used until input was generated: 100.620845
+'2'
+
+Time used until input was generated: 103.767858
+'3'
+
+Time used until input was generated: 127.385192
+'9'
+
+Time used until input was generated: 148.370134
+'8'
+
+Time used until input was generated: 173.086681
+"10'"
+
+Time used until input was generated: 180.515147
+'11_'
+
+Time used until input was generated: 187.237596
+'12u'
+
+Time used until input was generated: 205.210058
+'13c'
+
