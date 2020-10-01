@@ -8,7 +8,9 @@ class MjsValidate(Validate):
         return do([exe, '-f', fname])
 
     def _cov(self, res):
-        return res.stdout.decode().split('\n')[4]
+        l = res.stdout.decode().split('\n')[2].replace('Lines executed:', '').split(' ')[0][:-1]
+        b = res.stdout.decode().split('\n')[4].replace('Branches executed:', '').split(' ')[0][:-1]
+        return (l, b)
 
-validator = TinycValidate('./examples/mjs/mjs')
+validator = MjsValidate('./examples/mjs/mjs')
 

@@ -57,7 +57,7 @@ def generate(validator, prev_bytes=None):
         iter_limit -= 1
         choices = [i for i in all_choices if i not in seen]
         if not choices:
-            raise Exception('Backtrack disabled.')
+            #raise Exception('Backtrack disabled.')
             seen, prev_bytes, choices = backtrack(prev_bytes, all_choices)
 
         byte = new_byte(choices)
@@ -82,7 +82,7 @@ def generate(validator, prev_bytes=None):
                 seen.add(byte)
                 continue
             else:
-                raise Exception('Backtrack disabled..')
+                #raise Exception('Backtrack disabled..')
                 logit("%s %s" % (len(choices), len(seen)))
                 if n < len(SEEN_AT):
                     seen = SEEN_AT[n]
