@@ -28,4 +28,12 @@ tiny:
 	make run V=examples/tiny/tinyc.py
 
 
+pFuzz:
+	$(MAKE) clean
+	$(MAKE) compile
+	env LC_ALL=C python3 check_inputs.py examples/cjson/cjson.cov
+	env LC_ALL=C python3 check_inputs.py examples/csv/csvparser.cov
+	env LC_ALL=C python3 check_inputs.py examples/ini/ini.cov
+	env LC_ALL=C python3 check_inputs.py examples/mjs/mjs.cov
+	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov
 
