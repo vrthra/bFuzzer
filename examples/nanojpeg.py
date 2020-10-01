@@ -904,11 +904,11 @@ def njDecode(jpeg, size):
     nj.spos = jpeg
     nj.pos = 0
     nj.size = size & 0x7FFFFFFF
-    if (nj.size < 2): return Status.Incomplete, None
+    #X if (nj.size < 2): return Status.Incomplete, None
     if ((x(nj.spos[nj.pos]) ^ 0xFF) | (x(nj.spos[nj.pos+1]) ^ 0xD8)): return Status.Incorrect, -1
     njSkip(2)
     while not nj.error:
-        if (nj.size < 2): return Status.Incomplete, -1
+        #X if (nj.size < 2): return Status.Incomplete, -1
         if (x(nj.spos[nj.pos]) != 0xFF): return Status.Incorrect, -1
         njSkip(2)
         m = x(nj.spos[nj.pos - 1])
