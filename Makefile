@@ -31,9 +31,10 @@ tiny:
 pFuzz:
 	$(MAKE) clean
 	$(MAKE) compile
-	env LC_ALL=C python3 check_inputs.py examples/cjson/cjson.cov
-	env LC_ALL=C python3 check_inputs.py examples/csv/csvparser.cov
-	env LC_ALL=C python3 check_inputs.py examples/ini/ini.cov
-	env LC_ALL=C python3 check_inputs.py examples/mjs/mjs.cov
-	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov
+	env LC_ALL=C python3 check_inputs.py examples/cjson/cjson.cov pfuzzer/cjson.py
+	env LC_ALL=C python3 check_inputs.py examples/csv/csvparser.cov pfuzzer/csvparser.py
+	env LC_ALL=C python3 check_inputs.py examples/ini/ini.cov pfuzzer/ini.py
+	env LC_ALL=C python3 check_inputs.py examples/mjs/mjs.cov pfuzzer/mjs.py
+	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov pfuzzer/tiny.py
+
 

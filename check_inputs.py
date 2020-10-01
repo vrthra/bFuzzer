@@ -37,7 +37,8 @@ if __name__ == "__main__":
     import importlib.util
     my_module = sys.argv[1]
     name = os.path.basename(my_module).replace('.cov', '')
-    spec = importlib.util.spec_from_file_location("decoder", 'pfuzzer/%s.py' % name)
+    my_input = sys.argv[2] # 'pfuzzer/%s.py' % name
+    spec = importlib.util.spec_from_file_location("decoder", my_input)
     my_decoder = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(my_decoder)
     r = check_valid_inputs(my_module.replace('.cov', ''), my_decoder.inputs, name)
