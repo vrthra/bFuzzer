@@ -28,6 +28,11 @@ ini:
 tiny:
 	make run V=examples/tiny/tinyc.py
 
+mjs:
+	make run V=examples/mjs/mjs.py
+
+all_bfuzzer: tiny cjson mjs ini csv
+	@echo done
 
 pFuzz:
 	$(MAKE) clean
