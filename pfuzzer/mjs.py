@@ -1,4 +1,5 @@
 inputs = [
+# commented out syntactically invalid inputs in consultation with Bjoern Mathis.
 [17.160578, 'N'],
 [34.174502, 'aaaaaaaaaa'],
 [73.633040, 'aaaaaaaaa'],
@@ -10,8 +11,8 @@ inputs = [
 [267.967581, 'aaaaaa'],
 [303.052694, '6818986aaaaaaaaa'],
 [319.324995, 'mkstr'],
-[360.650301, 'catch'],
-[373.628311, 'throw'],
+# [360.650301, 'catch'],
+# [373.628311, 'throw'],
 [456.681673, 'break'],
 [490.550407, 'aaaaa'],
 [504.401268, 'false'],
@@ -45,7 +46,7 @@ inputs = [
 [1420.566093, 'while20215T'],
 [1446.403364, 'while20219O'],
 [1474.741890, 'while20210U'],
-[1507.643625, 'instanceof'],
+#[1507.643625, 'instanceof'],
 [1540.738144, 'while20240Z'],
 [1565.559665, 'while20239W'],
 [1590.275209, 'while20245T'],
@@ -113,8 +114,8 @@ inputs = [
 [4108.084181, 'while202202218Z'],
 [5848.277286, 'undefined'],
 [7586.223022, 'while202>200'],
-[8289.482693, 'delete'],
+#[8289.482693, 'delete'],
 [8902.002047, 'return_'],
-[9012.183313, 'switch'],
+#[9012.183313, 'switch'],
 [9215.952480, '0']
 ]
