@@ -32,6 +32,7 @@ mjs:
 	make run V=examples/mjs/mjs.py
 
 all_bfuzzer:
+	rm -rf examples/results_*.json
 	$(MAKE) tiny cjson mjs ini csv
 	@echo done
 
