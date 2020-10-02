@@ -9,6 +9,15 @@ class PFuzzerMjsValidator(Validate):
     def _exec(self, exe, fname):
         return do([exe, '-f', fname])
 
+    def validate(self, input_str):
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(input_str)
+            f.flush()
+            res = self._exec(self.exe, f.name)
+            if res.returncode == 0:
+                return Status.Complete, None
+            assert False
+
     def _cov(self, res):
         s = res.stdout.decode().split('\n')
         assert s[5] == "File 'mjs.c'"
