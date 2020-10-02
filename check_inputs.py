@@ -36,7 +36,7 @@ class PFuzzerMjsValidator(PFuzzerValidator):
         s = res.stdout.decode().split('\n')
         assert s[5] == "File 'mjs.c'"
         l = s[6].replace('Lines executed:', '').split(' ')[0][:-1]
-        b = s[7].replace('Branches executed:', '').split(' ')[0][:-1]
+        b = s[8].replace('Taken at least once:', '').split(' ')[0][:-1]
         return (l, b)
 
 def check_valid_inputs(exe, my_data, name):

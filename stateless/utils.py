@@ -55,7 +55,7 @@ class Validate:
             
     def _cov(self, res):
         l = res.stdout.decode().split('\n')[1].replace('Lines executed:', '').split(' ')[0][:-1]
-        b = res.stdout.decode().split('\n')[2].replace('Branches executed:', '').split(' ')[0][:-1]
+        b = res.stdout.decode().split('\n')[3].replace('Taken at least once:', '').split(' ')[0][:-1]
         return (l,b)
     
     def _exec(self, exe, fname):
