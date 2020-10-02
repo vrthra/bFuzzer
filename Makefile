@@ -11,6 +11,7 @@ drun:
 clean:
 	find . -name __pycache__ -type d -print0 -prune | xargs -0 -- rm -r
 	for i in $(SRC); do (cd $$i; make clean); done
+	rm -rf examples/results_*.json
 
 compile:
 	for i in $(SRC); do (cd $$i; make); done
@@ -36,6 +37,7 @@ pFuzz:
 	env LC_ALL=C python3 check_inputs.py examples/ini/ini.cov pfuzzer/ini.py
 	env LC_ALL=C python3 check_inputs.py examples/mjs/mjs.cov pfuzzer/mjs.py
 	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov pfuzzer/tiny.py
+	mv examples/results_* pfuzzer/
 
 
 simple:
@@ -46,5 +48,6 @@ simple:
 	env LC_ALL=C python3 check_inputs.py examples/ini/ini.cov simplechains/ini.py
 	env LC_ALL=C python3 check_inputs.py examples/mjs/mjs.cov simplechains/mjs.py
 	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov simplechains/tiny.py
+	mv examples/results_* simplechains/
 
 
