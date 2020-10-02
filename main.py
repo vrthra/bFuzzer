@@ -55,7 +55,7 @@ def run_for(validator, name, secs=None):
                   file=f, flush=True)
     return lst_generated
 
-time_to_run = 1
+time_to_run = 3600
 if __name__ == "__main__":
     import importlib.util
     import sys
