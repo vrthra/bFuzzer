@@ -3,12 +3,7 @@ import random
 from stateless.utils import *
 import sys
 
-class PFuzzerValidator(Validate): ...
-
-class PFuzzerMjsValidator(Validate):
-    def _exec(self, exe, fname):
-        return do([exe, '-f', fname])
-
+class PFuzzerValidator(Validate):
     def validate(self, input_str):
         with tempfile.NamedTemporaryFile() as f:
             f.write(input_str)
@@ -16,7 +11,26 @@ class PFuzzerMjsValidator(Validate):
             res = self._exec(self.exe, f.name)
             if res.returncode == 0:
                 return Status.Complete, None
-            assert False
+            print('Invalid value %s' % repr(input_str))
+            sys.exit(1)
+
+    def get_cumulative_coverage(self, input_str):
+        self.cov_exe = '%s.cov' % self.exe
+        self.src_dir, src_ = os.path.split(self.exe)
+        self.cov_src = '%s.c' % src_
+        with tempfile.NamedTemporaryFile() as f:
+            f.write(input_str)
+            f.flush()
+            res1 = self._exec(self.cov_exe, f.name)
+            assert res1.returncode == 0, ('error %s' % str(input_str))
+            with chdir(self.src_dir):
+                res2 = do(['gcov', '-n', '-b', self.cov_src])
+                cov_result = self._cov(res2)
+                return cov_result
+
+class PFuzzerMjsValidator(PFuzzerValidator):
+    def _exec(self, exe, fname):
+        return do([exe, '-f', fname])
 
     def _cov(self, res):
         s = res.stdout.decode().split('\n')
