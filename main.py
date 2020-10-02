@@ -44,7 +44,7 @@ def run_for(validator, name, secs=None):
     if secs is None:
         secs = 10
     lst_generated = []
-    with open('x_results_%s.json' % name, 'a+') as f:
+    with open('examples/results_%s.json' % name, 'a+') as f:
         while (time.time() - start) < secs:
             i = valid_input(validator)
             c = validator.get_cumulative_coverage(i)

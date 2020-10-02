@@ -31,7 +31,8 @@ tiny:
 mjs:
 	make run V=examples/mjs/mjs.py
 
-all_bfuzzer: tiny cjson mjs ini csv
+all_bfuzzer:
+	$(MAKE) tiny cjson mjs ini csv
 	@echo done
 
 pFuzz:
