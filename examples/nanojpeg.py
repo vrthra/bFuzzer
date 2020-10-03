@@ -897,7 +897,8 @@ def njDone():
     pass
 
 def x(v):
-    return int(v.hex(), 16)
+    #return int(v.hex(), 16)
+    return v
 
 def njDecode(jpeg, size):
     njDone()
@@ -939,16 +940,36 @@ def njGetImage():
 def njGetImageSize():
     return nj.width * nj.height * nj.ncomp
 
-def validate(inputstr):
-    try:
-        v, at =  njDecode(inputstr, len(inputstr))
-        rv, n, c = v, at, ''
-        return rv, n, c
-    except NeedMoreException as e:
-        return Status.Incomplete, -1, None
-    except InvalidValueException as e:
-        return Status.Incorrect, -1, None
-    except Exception as e:
-        #return Status.Incorrect, None, None
-        print(e)
-        raise e
+from stateless.utils import *
+
+class NanoJPEGValidate(Validate):
+    def __init__(self, exe):
+        return
+
+    def _exec(self, exe, fname):
+        return ''
+
+    def _cov(self, res):
+        return (None, None)
+
+    def validate(self, inputstr):
+        try:
+            v, at =  njDecode(inputstr, len(inputstr))
+            rv, n, c = v, at, ''
+            return rv, None
+        except IndexError as e:
+            return Status.Incomplete, None
+        except NeedMoreException as e:
+            return Status.Incomplete, None
+        except InvalidValueException as e:
+            return Status.Incorrect, None
+        except Exception as e:
+            return Status.Incorrect, None
+
+    def _exec(self, exe, fname):
+        return do([exe, fname])
+
+    def get_cumulative_coverage(self, input_str):
+        return ''
+
+validator = NanoJPEGValidate('')
