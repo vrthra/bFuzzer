@@ -15,7 +15,8 @@ def init_set_of_bytes(s_bytes):
     SET_OF_BYTES = s_bytes
 
 def logit(v):
-    print(v, file=sys.stderr)
+    ...
+    #print(v, file=sys.stderr)
 
 def new_byte(choices):
     v = random.choice(choices)
