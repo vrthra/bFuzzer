@@ -1,18 +1,24 @@
-Time used until input was generated: 13.797923
-' '
+Time used until input was generated: 1.889796
+';'
 
-Time used until input was generated: 33.928905
+Time used until input was generated: 5.152389
+'[]'
+
+Time used until input was generated: 9.768698
+'H='
+
+Time used until input was generated: 11.050685
 '\n'
 
-Time used until input was generated: 43.449429
+Time used until input was generated: 14.381279
+'=L'
+
+Time used until input was generated: 15.778761
 ':'
 
-Time used until input was generated: 50.102913
-'='
+Time used until input was generated: 2470.954943
+' #'
 
-Time used until input was generated: 69.978871
-';S'
-
-Time used until input was generated: 76.643049
-'#\\'
+Time used until input was generated: 2503.109502
+' \n='
 

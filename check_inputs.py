@@ -43,10 +43,10 @@ def check_valid_inputs(exe, my_data, name):
     lst_generated = []
     pf = (PFuzzerMjsValidator(exe) if name == 'mjs' else PFuzzerValidator(exe))
 
-    with open('examples/results_%s.json' % name, 'a+') as f:
+    with open('examples/results_%s.json' % name, 'w+') as f:
         for i,(t,b) in enumerate(my_data):
             try:
-                c = pf.get_cumulative_coverage(b.encode())
+                c = pf.get_cumulative_coverage(b)
                 lst_generated.append((i,c))
                 print(json.dumps({'output':[j for j in b], 
                                   'cumcoverage': c,

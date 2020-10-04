@@ -1,24 +1,27 @@
-Time used until input was generated: 20.669642
-'6;'
+Time used until input was generated: 5.479862
+' ;'
 
-Time used until input was generated: 573.685156
-'6+x+(14);'
+Time used until input was generated: 137.331139
+'(5\n+r<y);'
 
-Time used until input was generated: 686.449382
-'6<5;'
+Time used until input was generated: 159.048908
+'{}'
 
-Time used until input was generated: 846.155843
-'6+x\n;'
+Time used until input was generated: 303.092243
+'6<j-\nh;'
 
-Time used until input was generated: 857.525512
-'6<5-14;'
+Time used until input was generated: 467.406304
+'{3\n;}'
 
-Time used until input was generated: 868.996667
-'6+x+(p);'
+Time used until input was generated: 689.909334
+'(\nc);'
 
-Time used until input was generated: 880.840498
-';'
+Time used until input was generated: 747.335986
+'(\nc=5);'
 
-Time used until input was generated: 1192.871277
-'while (5);'
+Time used until input was generated: 954.867716
+' \nwhile (a);'
+
+Time used until input was generated: 1015.704999
+' \nif (5);'
 

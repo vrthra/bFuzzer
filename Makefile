@@ -28,6 +28,12 @@ ini:
 tiny:
 	make run V=examples/tiny/tinyc.py
 
+convert:
+	cd pfuzzer/; for i in *.txt; do \
+		echo ../convert_validtxt.py $$i  $${i//.txt/.py}; \
+		python3 ../convert_validtxt.py $$i > $${i//.txt/.py}; \
+		done
+
 mjs:
 	make run V=examples/mjs/mjs.py
 
@@ -40,11 +46,12 @@ all_bfuzzer:
 pFuzz:
 	$(MAKE) clean
 	$(MAKE) compile
+	$(MAKE) convert
 	env LC_ALL=C python3 check_inputs.py examples/cjson/cjson.cov pfuzzer/cjson.py
-	env LC_ALL=C python3 check_inputs.py examples/csv/csvparser.cov pfuzzer/csvparser.py
+	env LC_ALL=C python3 check_inputs.py examples/csv/csvparser.cov pfuzzer/csv.py
 	env LC_ALL=C python3 check_inputs.py examples/ini/ini.cov pfuzzer/ini.py
 	env LC_ALL=C python3 check_inputs.py examples/mjs/mjs.cov pfuzzer/mjs.py
-	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov pfuzzer/tiny.py
+	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov pfuzzer/tinyc.py
 	mv examples/results_* pfuzzer/
 
 
@@ -52,10 +59,10 @@ simple:
 	$(MAKE) clean
 	$(MAKE) compile
 	env LC_ALL=C python3 check_inputs.py examples/cjson/cjson.cov simplechains/cjson.py
-	env LC_ALL=C python3 check_inputs.py examples/csv/csvparser.cov simplechains/csvparser.py
+	env LC_ALL=C python3 check_inputs.py examples/csv/csvparser.cov simplechains/csv.py
 	env LC_ALL=C python3 check_inputs.py examples/ini/ini.cov simplechains/ini.py
 	env LC_ALL=C python3 check_inputs.py examples/mjs/mjs.cov simplechains/mjs.py
-	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov simplechains/tiny.py
+	env LC_ALL=C python3 check_inputs.py examples/tiny/tiny.cov simplechains/tinyc.py
 	mv examples/results_* simplechains/
 
 
