@@ -1626,10 +1626,17 @@ static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_bu
         current_item->string = current_item->valuestring;
         current_item->valuestring = NULL;
 
+        if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] == NULL))
+        {
+          //printf("Incomplete. 006\n");
+          exit(-1);
+          goto fail; /* no input */
+        }
 
         if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] != ':'))
         {
-
+            //printf("Invalid char: Expecting :\n");
+            exit(1);
             goto fail; /* invalid object */
         }
 
