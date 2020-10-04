@@ -54,14 +54,17 @@ class Validate:
                 return Status.Complete, None
             
     def _cov(self, res):
-        l = res.stdout.decode().split('\n')[1].replace('Lines executed:', '').split(' ')[0][:-1]
-        b = res.stdout.decode().split('\n')[3].replace('Taken at least once:', '').split(' ')[0][:-1]
+        assert res.returncode == 0
+        ol = res.stdout.decode().split('\n')
+        l = ol[1].replace('Lines executed:', '').split(' ')[0][:-1]
+        b = ol[3].replace('Taken at least once:', '').split(' ')[0][:-1]
         return (l,b)
     
     def _exec(self, exe, fname):
         return do([exe, fname])
             
     def get_cumulative_coverage(self, input_str):
+        assert input_str is not None
         self.cov_exe = '%s.cov' % self.exe
         self.src_dir, src_ = os.path.split(self.exe)
         self.cov_src = '%s.c' % src_
