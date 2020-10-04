@@ -93,6 +93,37 @@ CJSON_PUBLIC(const char*) cJSON_Version(void)
     return version;
 }
 
+/* String comparison, For more accurate error response */
+
+static int precise_strncmp(const unsigned char* string1, char string2[], int num)
+{
+  int i;
+  int string_len;
+  string_len = strlen(string1);
+  //printf("String: \n");
+  //printf(string1);
+  //printf("\nLength: %d\n", string_len);
+  //printf("\nNum: %d\n", num);
+  for (i = 0; i < num; ++i)
+  {
+    if (string_len <= i || string1[i] == '\n')
+    {
+      //printf("Token Incomplete.\n");
+      exit(-1);
+    }
+    else if (string1[i] != string2[i])
+    {
+      //printf("Invalid char.\n");
+      exit(1);
+    }
+  }
+
+
+  //printf("* correct *\n");
+  return 0;
+}
+
+
 /* Case insensitive string comparison, doesn't consider two NULL pointers equal though */
 static int case_insensitive_strcmp(const unsigned char *string1, const unsigned char *string2)
 {
@@ -707,7 +738,8 @@ static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_bu
     {
         if (buffer_at_offset(input_buffer)[0] == NULL)
         {
-            printf("Need more chars 003.\n");
+            //printf("Need more chars 003.\n");
+            //printf("Incomplete. 001\n");
             exit(-1);
             goto fail;
         }
@@ -736,7 +768,8 @@ static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_bu
         }
         if (((size_t)(input_end - input_buffer->content) >= input_buffer->length) || (*input_end != '\"'))
         {
-            printf("Need more chars.\n");
+            //printf("Need more chars.\n");
+            //printf("Incomplete. 002\n");
             exit(-1);
             goto fail; /* string ended unexpectedly */
         }
@@ -1227,34 +1260,14 @@ static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buf
 
     if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] == NULL))
     {
-        printf("Need more chars 001.\n");
+        //printf("Need more chars 001.\n");
+        //printf("Incomplete. 003\n");
         exit(-1);
         return false; /* no input */
     }
 
     /* parse the different types of values */
-    /* null */
-    if (can_read(input_buffer, 4) && (strncmp((const char*)buffer_at_offset(input_buffer), "null", 4) == 0))
-    {
-        item->type = cJSON_NULL;
-        input_buffer->offset += 4;
-        return true;
-    }
-    /* false */
-    if (can_read(input_buffer, 5) && (strncmp((const char*)buffer_at_offset(input_buffer), "false", 5) == 0))
-    {
-        item->type = cJSON_False;
-        input_buffer->offset += 5;
-        return true;
-    }
-    /* true */
-    if (can_read(input_buffer, 4) && (strncmp((const char*)buffer_at_offset(input_buffer), "true", 4) == 0))
-    {
-        item->type = cJSON_True;
-        item->valueint = 1;
-        input_buffer->offset += 4;
-        return true;
-    }
+
     /* string */
     if (can_access_at_index(input_buffer, 0) && (buffer_at_offset(input_buffer)[0] == '\"'))
     {
@@ -1274,6 +1287,30 @@ static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buf
     if (can_access_at_index(input_buffer, 0) && (buffer_at_offset(input_buffer)[0] == '{'))
     {
         return parse_object(item, input_buffer);
+    }
+
+    const unsigned char* curr_token = (const char*)buffer_at_offset(input_buffer);
+    /* null */
+    if (can_read(input_buffer, 2) && (curr_token[0] == 'n') && (precise_strncmp((const char*)buffer_at_offset(input_buffer), "null", 4) == 0))
+    {
+        item->type = cJSON_NULL;
+        input_buffer->offset += 4;
+        return true;
+    }
+    /* false */
+    if (can_read(input_buffer, 2) && (curr_token[0] == 'f') && (precise_strncmp((const char*)buffer_at_offset(input_buffer), "false", 5) == 0))
+    {
+        item->type = cJSON_False;
+        input_buffer->offset += 5;
+        return true;
+    }
+    /* true */
+    if (can_read(input_buffer, 2) && (curr_token[0] == 't') && (precise_strncmp((const char*)buffer_at_offset(input_buffer), "true", 4) == 0))
+    {
+        item->type = cJSON_True;
+        item->valueint = 1;
+        input_buffer->offset += 4;
+        return true;
     }
 
     return false;
@@ -1423,11 +1460,19 @@ static cJSON_bool parse_array(cJSON * const item, parse_buffer * const input_buf
     }
     while (can_access_at_index(input_buffer, 0) && (buffer_at_offset(input_buffer)[0] == ','));
 
+
     if (cannot_access_at_index(input_buffer, 0) || buffer_at_offset(input_buffer)[0] != ']')
     {
-        printf("Need more chars.\n");
-        exit(-1);
-        goto fail; /* expected end of array */
+        if (buffer_at_offset(input_buffer)[0] != NULL)
+        {
+          //printf("Invalid char. Expecting a closing bracket.\n");
+          exit(1);
+        }
+        else {
+          //printf("Incomplete. 004\n");
+          exit(-1);
+          goto fail; /* expected end of array */
+        }
     }
 
 success:
@@ -1581,8 +1626,10 @@ static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_bu
         current_item->string = current_item->valuestring;
         current_item->valuestring = NULL;
 
+
         if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] != ':'))
         {
+
             goto fail; /* invalid object */
         }
 
@@ -1591,6 +1638,7 @@ static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_bu
         buffer_skip_whitespace(input_buffer);
         if (!parse_value(current_item, input_buffer))
         {
+
             goto fail; /* failed to parse value */
         }
         buffer_skip_whitespace(input_buffer);
@@ -1599,9 +1647,16 @@ static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_bu
 
     if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] != '}'))
     {
-        printf("Need more chars.\n");
+      if (buffer_at_offset(input_buffer)[0] != NULL)
+      {
+        //printf("Invalid char. Expecting a closing bracket.\n");
+        exit(1);
+      }
+      else {
+        //printf("Incomplete. 005\n");
         exit(-1);
-        goto fail; /* expected end of object */
+        goto fail; /* expected end of array */
+      }
     }
 
 success:
