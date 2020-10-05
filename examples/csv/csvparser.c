@@ -244,7 +244,7 @@ FILE* v = 0;
 char* read_input() {
     int counter = 0;
     char* chars = malloc(sizeof(char) * 1000);
-    char c = 0;
+    int c = 0;
     while((c = fgetc(v)) != EOF){
         if (counter == 1000) {
             exit(1);
