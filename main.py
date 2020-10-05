@@ -5,6 +5,7 @@ import random
 import time
 import json
 import sys
+import string
 
 G.init_set_of_bytes([bytes([i]) for i in range(256)])
 
@@ -28,13 +29,16 @@ def valid_input(validator):
             sys.exit(-1)
         print(repr(created_bits), file=sys.stderr)
         if len(created_bits) < 3 and random.randint(0,10) > 1:
+            print('continuing from previous')
             parray = created_bits
             continue
         if random.randrange(len(created_bits)) == 0:
+            print('continuing from previous')
             parray = created_bits
             continue
         if created_bits is None:
             continue
+        print()
         G.SEEN_AT.clear()
         return created_bits
 

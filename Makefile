@@ -28,6 +28,10 @@ ini:
 tiny:
 	make run V=examples/tiny/tinyc.py
 
+tri:
+	make run V=examples/tri/tri.py
+
+
 convert:
 	cd pfuzzer/; for i in *.txt; do \
 		echo ../convert_validtxt.py $$i  $${i//.txt/.py}; \
