@@ -50,8 +50,10 @@ class Validate:
                 return Status.Incorrect, None
             elif res.returncode == -1:
                 return Status.Incomplete, None
-            else:
+            elif res.returncode == 0:
                 return Status.Complete, None
+            else:
+                assert False, ("Wrong code; %s" % res.returncode)
             
     def _cov(self, res):
         assert res.returncode == 0
