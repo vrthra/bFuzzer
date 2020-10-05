@@ -3032,11 +3032,17 @@ char* read_input() {
 }
 
 int main(int argc, char** argv) {
-    v = fopen(argv[1], "r");
+    if (argc > 1) {
+      v = fopen(argv[1], "r");
+    } else {
+      v = stdin;
+    }
     char* string = read_input();
     printf(string);
     cJSON *json = cJSON_Parse(string);
-    fclose(v);
+    if (argc > 1) {
+      fclose(v);
+    }
     if (json == NULL) {
         printf("Invalid json.\n");
         exit(1);

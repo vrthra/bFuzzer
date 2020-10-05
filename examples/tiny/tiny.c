@@ -279,7 +279,11 @@ int main(int argc, char** argv)
 { int i;
   /*char buffer[1024];
   fgets(buffer, 1024, stdin);*/
-  v = fopen(argv[1], "r");
+  if (argc > 1) {
+    v = fopen(argv[1], "r");
+  } else {
+    v = stdin;
+  }
   c(program());
 
   for (i=0; i<26; i++)
@@ -288,7 +292,8 @@ int main(int argc, char** argv)
   for (i=0; i<26; i++)
     if (globals[i] != 0)
       printf("%c = %d\n", 'a'+i, globals[i]);
-
-  fclose(v);
+  if (argc > 1) {
+    fclose(v);
+  }
   return 0;
 }

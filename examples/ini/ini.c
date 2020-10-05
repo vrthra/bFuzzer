@@ -320,9 +320,15 @@ char* read_input() {
 
 int main(int argc, char** argv) {
     configuration config;
-    v = fopen(argv[1], "r");
+    if (argc > 1) {
+      v = fopen(argv[1], "r");
+    } else {
+      v = stdin;
+    }
     char* string = read_input();
-    fclose(v);
+    if (argc > 1) {
+      fclose(v);
+    }
     //printf(string);
     //int num = 999;
     //num = ini_parse_string(string, handler, &config);

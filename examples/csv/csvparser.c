@@ -256,11 +256,16 @@ char* read_input() {
 }
 
 int main(int argc, char** argv) {
-    v = fopen(argv[1], "r");
-
+    if (argc > 1) {
+      v = fopen(argv[1], "r");
+    } else {
+      v = stdin;
+    }
     char* string = read_input();
     printf("%s", string);
-    fclose(v);
+    if (argc > 1) {
+      fclose(v);
+    }
     int i =  0;
     //                                   file, delimiter, first_line_is_header?
     CsvParser *csvparser = CsvParser_new_from_string(string, ",", 1);

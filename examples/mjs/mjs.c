@@ -12593,11 +12593,12 @@ MJS_PRIVATE void mjs_op_json_parse(struct mjs *mjs) {
 /* Amalgamated: #include "mjs/src/mjs_util.h" */
 
 // added to conform afl
+FILE* v = 0;
 char* read_input() {
     int counter = 0;
     char* chars = malloc(sizeof(char) * 1000);
     char c = 0;
-    while((c = fgetc(stdin)) != EOF){
+    while((c = fgetc(v)) != EOF){
         if (counter == 1000) {
             exit(1);
         }
@@ -12607,50 +12608,27 @@ char* read_input() {
     return chars;
 }
 // end adding
-
 int main(int argc, char *argv[]) {
   struct mjs *mjs = mjs_create();
   mjs_val_t res = MJS_UNDEFINED;
   mjs_err_t err = MJS_OK;
   int i;
-
-  for (i = 1; i < argc && argv[i][0] == '-' && err == MJS_OK; i++) {
-    if (strcmp(argv[i], "-l") == 0 && i + 1 < argc) {
-      cs_log_set_level(atoi(argv[++i]));
-    } else if (strcmp(argv[i], "-j") == 0) {
-      mjs_set_generate_jsc(mjs, 1);
-    } else if (strcmp(argv[i], "-e") == 0 && i + 1 < argc) {
-      err = mjs_exec(mjs, argv[++i], &res);
-    } else if (strcmp(argv[i], "-f") == 0 && i + 1 < argc) {
-      err = mjs_exec_file(mjs, argv[++i], &res);
-    } else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
-      printf("mJS (c) Cesanta, built: " __DATE__ "\n");
-      printf("Usage:\n");
-      printf("%s [OPTIONS] [js_file ...]\n", argv[0]);
-      printf("OPTIONS:\n");
-      printf("  -e string    - Execute JavaScript expression\n");
-      printf("  -j           - Enable code precompiling to .jsc files\n");
-      printf("  -f js_file   - Execute code from .js JavaScript file\n");
-      printf("  -l level     - Set debug level, from 0 to 5\n");
-      return EXIT_SUCCESS;
-    } else {
-      fprintf(stderr, "Unknown flag: [%s]\n", argv[i]);
-      return EXIT_FAILURE;
-    }
+  if (argc > 1) {
+      v = fopen(argv[1], "r");
+  } else {
+      v = stdin;
   }
-
-  if (err != MJS_OK) {
-        mjs_print_error(mjs, stdout, NULL, 1 /* print_stack_trace */);
-        return EXIT_FAILURE;
+  err = mjs_exec(mjs, read_input(), &res);
+  if (argc > 1) {
+    fclose(v);
   }
-  /*err = mjs_exec(mjs, read_input(), &res);
-
   if (err == MJS_OK) {
     mjs_fprintf(res, mjs, stdout);
     putchar('\n');
   } else {
-    mjs_print_error(mjs, stdout, NULL, 1 / * print_stack_trace * /);
-  }*/
+    mjs_print_error(mjs, stdout, NULL, 1 /* print_stack_trace */);
+    return EXIT_FAILURE;
+  }
   mjs_destroy(mjs);
 
   return EXIT_SUCCESS;
