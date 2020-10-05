@@ -4,6 +4,8 @@ import random
 from stateless.status import *
 from stateless.exceptions import *
 
+LOG = False
+
 ITERATION_LIMIT=(256*256 + 10000)
 INPUT_LIMIT=1000
 
@@ -15,17 +17,19 @@ def init_set_of_bytes(s_bytes):
     SET_OF_BYTES = s_bytes
 
 def logit(v):
-    ...
-    #print(v, file=sys.stderr)
+    if LOG:
+        print(v, file=sys.stderr)
 
 def new_byte(choices):
     v = random.choice(choices)
     return v
 
-def backtrack(prev_bytes, all_choices):
+def backtrack(prev_bytes, all_choices, limit=0):
     global SEEN_AT
     if not prev_bytes:
         raise BacktrackLimitException('Cant backtrack beyond zero index')
+    if limit == -1:
+        raise BacktrackLimitException('Cant backtrack beyond last valid inputs')
     # backtrack one byte
     seen = SEEN_AT[len(prev_bytes)-1]
     SEEN_AT = SEEN_AT[:-1]
@@ -35,7 +39,7 @@ def backtrack(prev_bytes, all_choices):
     prev_bytes = prev_bytes[:-1]
     choices = [i for i in all_choices if i not in seen]
     if not choices:
-        return backtrack(prev_bytes, all_choices)
+        return backtrack(prev_bytes, all_choices, limit - 1)
     return seen, prev_bytes, choices
 
 def till_n_length_choices(my_choices, rs):
@@ -46,7 +50,7 @@ def till_n_length_choices(my_choices, rs):
         all_choices.extend(v)
     return all_choices
 
-def generate(validator, prev_bytes=None):
+def generate(validator, prev_bytes=None, limit=0):
     global SEEN_AT
     all_choices = SET_OF_BYTES
     if prev_bytes is None: prev_bytes = b''
@@ -59,7 +63,7 @@ def generate(validator, prev_bytes=None):
         choices = [i for i in all_choices if i not in seen]
         if not choices:
             #raise Exception('Backtrack disabled.')
-            seen, prev_bytes, choices = backtrack(prev_bytes, all_choices)
+            seen, prev_bytes, choices = backtrack(prev_bytes, all_choices, limit)
 
         byte = new_byte(choices)
         cur_bytes = prev_bytes + byte
@@ -69,6 +73,7 @@ def generate(validator, prev_bytes=None):
 
         rv, n = validator.validate(cur_bytes)
         if rv == Status.Complete:
+            SEEN_AT.append(seen)
             return cur_bytes
         elif rv == Status.Incomplete:
             seen.add(byte)  # dont explore this byte again
