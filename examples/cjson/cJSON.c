@@ -106,7 +106,7 @@ static int precise_strncmp(const unsigned char* string1, char string2[], int num
   //printf("\nNum: %d\n", num);
   for (i = 0; i < num; ++i)
   {
-    if (string_len <= i || string1[i] == '\n')
+    if (string_len <= i)
     {
       //printf("Token Incomplete.\n");
       exit(-1);

@@ -14,7 +14,7 @@ def valid_input(validator):
     while True:
         created_bits = None
         try:
-            created_bits = G.generate(validator, parray)
+            created_bits = G.generate(validator, parray, 0)
         except E.InputLimitException as e:
             print(str(e))
             G.SEEN_AT.clear()
