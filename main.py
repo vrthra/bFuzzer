@@ -1,47 +1,38 @@
 import os
 import stateless.generate as G
-import stateless.exceptions as E
+from stateless.exceptions import *
+from stateless.utils import *
 import random
 import time
 import json
 import sys
 import string
 
-G.init_set_of_bytes([bytes([i]) for i in range(256)])
+# NOTE: this contains the byte zero. This can cause trouble
+# for textual inputs.
+#G.init_set_of_bytes([bytes([i]) for i in range(256)])
+G.init_set_of_bytes([bytes([ord(i)]) for i in string.printable])
+G.INPUT_LIMIT = 1000
 
 def valid_input(validator):
     parray = b''
+    cb_arr = []
     while True:
         created_bits = None
         try:
             created_bits = G.generate(validator, parray, 0)
-        except E.InputLimitException as e:
+            cb_arr.append(created_bits)
+            if randrange(len(created_bits)) == 0:
+                parray = created_bits
+                print(' >', repr(created_bits), file=sys.stderr)
+                print('continuing from previous')
+                continue
+        except (InputLimitException,IterationLimitException,BacktrackLimitException) as e:
             print(str(e))
+        finally:
             G.SEEN_AT.clear()
-            continue
-        except E.IterationLimitException as e:
-            print(str(e))
-            G.SEEN_AT.clear()
-            continue
-        except E.BacktrackLimitException as e:
-            print(str(e))
-            G.SEEN_AT.clear()
-            sys.exit(-1)
         print(repr(created_bits), file=sys.stderr)
-        if len(created_bits) < 3 and random.randint(0,10) > 1:
-            print('continuing from previous')
-            parray = created_bits
-            continue
-        if random.randrange(len(created_bits)) == 0:
-            print('continuing from previous')
-            parray = created_bits
-            continue
-        if created_bits is None:
-            continue
-        print()
-        G.SEEN_AT.clear()
-        return created_bits
-
+        return cb_arr[-1] if cb_arr else None
 
 def run_for(validator, name, secs=None):
     start = time.time()
@@ -51,6 +42,7 @@ def run_for(validator, name, secs=None):
     with open('examples/results_%s.json' % name, 'a+') as f:
         while (time.time() - start) < secs:
             i = valid_input(validator)
+            if i is None: continue
             c = validator.get_cumulative_coverage(i)
             lst_generated.append((i,c, (time.time() - start)))
             print(json.dumps({'output':[j for j in i], 
