@@ -85,12 +85,13 @@ class Validate:
         elif res.returncode == 0:
             return Status.Complete, None
         else:
-            print("Wrong code; %s" % res.returncode)
-            with open('examples/dump_%s.json' % os.path.basename(self.exe), 'a+') as f:
-                print(json.dumps({'output':[j for j in input_str],
-                    'ret': res.returncode}), file=f, flush=True)
-            # likely a core dump
-            return Status.Incorrect, None
+            if res.returncode < -1:
+                # likely a core dump
+                print("Wrong code; %s" % res.returncode)
+                with open('examples/dump_%s.json' % os.path.basename(self.exe), 'a+') as f:
+                    print(json.dumps({'output':[j for j in input_str],
+                        'ret': res.returncode}), file=f, flush=True)
+            return Status.Incorrect, res.returncode
             
     def _cov(self, res):
         assert res.returncode == 0
