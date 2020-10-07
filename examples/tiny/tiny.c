@@ -1,4 +1,5 @@
 /* file: "tinyc.c" */
+/* https://github.com/ULL-ESIT-PL-1718/tiny-c/blob/master/LICENSE GPL v3.0 */
 
 /* Copyright (C) 2001 by Marc Feeley, All Rights Reserved. */
 
