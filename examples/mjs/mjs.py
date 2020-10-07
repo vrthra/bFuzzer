@@ -5,8 +5,9 @@ class MjsValidate(Validate):
         self.exe = exe
 
     def _cov(self, res):
-        l = res.stdout.decode().split('\n')[2].replace('Lines executed:', '').split(' ')[0][:-1]
-        b = res.stdout.decode().split('\n')[4].replace('Branches executed:', '').split(' ')[0][:-1]
+        o = res.stdout.decode().split('\n')
+        l = o[6].replace('Lines executed:', '').split(' ')[0][:-1]
+        b = o[8].replace('Taken at least once:', '').split(' ')[0][:-1]
         return (l, b)
 
 validator = MjsValidate('./examples/mjs/mjs')
