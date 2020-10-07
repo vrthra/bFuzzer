@@ -37,6 +37,7 @@ void insert(struct Trie *head, char* str) {
 int search(struct Trie* head, char* str) {
     struct Trie* curr = head;
     while (*str) {
+        printf("%d\n", *str);
         if (*str < 'a') {
           return INCORRECT;
         }
@@ -47,6 +48,9 @@ int search(struct Trie* head, char* str) {
         if (curr == 0) {
             return INCORRECT;
         }
+        if (curr->isLeaf) {
+            return VALID;
+        }
         str++;
     }
     if (curr->isLeaf) {
@@ -56,23 +60,4 @@ int search(struct Trie* head, char* str) {
     }
 }
 
-int main_tri(char* str) {
-    struct Trie* head = getNewTrieNode();
-    int r = 0;
 
-    insert(head, "do");
-
-    insert(head, "if");
-
-    insert(head, "else");
-
-    insert(head, "while");
-
-    r = search(head, str);
-    return r;
-}
-
-int check_token(char* str) {
-
-    return main_tri(str);
-}

@@ -8,6 +8,20 @@
 FILE* v = 0;
 #include "tokens.h"
 
+struct Trie* head = 0;
+void init_tri() {
+    head = getNewTrieNode();
+    insert(head, "do");
+    insert(head, "if");
+    insert(head, "else");
+    insert(head, "while");
+}
+
+char* last_search = 0;
+int check_token(char* str) {
+    last_search = str;
+    return search(head, str);
+}
 /*
  * This is a compiler for the Tiny-C language.  Tiny-C is a
  * considerably stripped down version of C and it is meant as a
@@ -71,7 +85,9 @@ int sym;
 int int_val;
 char id_name[100];
 
-void syntax_error() { /*fprintf(stderr, "syntax error\n");*/ exit(1); }
+void syntax_error() {
+  /* TODO: here, we should return the #chars from the end -- saved in last_search */
+  /*fprintf(stderr, "syntax error\n");*/ exit(1); }
 void eof_error() { /*fprintf(stderr, "EOF error\n");*/ exit(-1); }
 void next_ch() { ch = getc(v); }
 
@@ -312,6 +328,7 @@ int main(int argc, char** argv)
   } else {
     v = stdin;
   }
+  init_tri();
   c(program());
 
   for (i=0; i<26; i++)
