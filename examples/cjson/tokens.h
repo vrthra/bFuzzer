@@ -48,6 +48,9 @@ int search(struct Trie* head, char* str) {
         if (curr == 0) {
             return INCORRECT;
         }
+        if (curr->isLeaf) {
+            return VALID;
+        }
         str++;
     }
     if (curr->isLeaf) {
