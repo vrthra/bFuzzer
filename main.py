@@ -13,6 +13,7 @@ import string
 #G.init_set_of_bytes([bytes([i]) for i in range(256)])
 G.init_set_of_bytes([bytes([ord(i)]) for i in string.printable])
 G.INPUT_LIMIT = 1000
+#G.LOG = True
 
 def valid_input(validator):
     parray = b''
@@ -24,14 +25,13 @@ def valid_input(validator):
             cb_arr.append(created_bits)
             if randrange(len(created_bits)) == 0:
                 parray = created_bits
-                print(' >', repr(created_bits), file=sys.stderr)
-                print('continuing from previous')
+                print('+>', repr(created_bits), file=sys.stderr)
                 continue
         except (InputLimitException,IterationLimitException,BacktrackLimitException) as e:
-            print(str(e))
+            print("E:", str(e))
         finally:
             G.SEEN_AT.clear()
-        print(repr(created_bits), file=sys.stderr)
+        print(">", repr(created_bits), len(cb_arr), file=sys.stderr)
         return cb_arr[-1] if cb_arr else None
 
 def run_for(validator, name, secs=None):
