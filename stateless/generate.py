@@ -88,15 +88,20 @@ def generate(validator, prev_bytes=None, limit=0):
                 seen.add(byte)
                 continue
             else:
-                #raise Exception('Backtrack disabled..')
-                logit("%s %s" % (len(choices), len(seen)))
-                if n < len(SEEN_AT):
-                    seen = SEEN_AT[n]
-                    SEEN_AT = SEEN_AT[:n]
-                seen.add(byte)
-                rs = len(cur_bytes) - n
-                all_choices = till_n_length_choices(SET_OF_BYTES, min(rs, 2))
-                prev_bytes = prev_bytes[:n]
+                if n > 0:
+                    #raise Exception('Backtrack disabled..')
+                    logit("%s %s" % (len(choices), len(seen)))
+                    if n < len(SEEN_AT):
+                        seen = SEEN_AT[n]
+                        SEEN_AT = SEEN_AT[:n]
+
+                    seen.add(byte)
+                    rs = len(cur_bytes) - n
+                    all_choices = till_n_length_choices(SET_OF_BYTES, min(rs, 2))
+                    prev_bytes = prev_bytes[:n]
+                else:
+                    pass
+                    # likely a core dump
         else:
             raise Exception(rv)
     raise IterationLimitException('Exhausted %d loops' % ITERATION_LIMIT)
