@@ -5,7 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-FILE* v = 0;
+char* buffer = 0;
+int buffer_i = 0;
+int eof = EOF;
 #include "tokens.h"
 
 struct Trie* head = 0;
@@ -17,9 +19,9 @@ void init_tri() {
     insert(head, "while");
 }
 
-char* last_search = 0;
+int last_search = -1;
 int check_token(char* str) {
-    last_search = str;
+    last_search = buffer_i;;
     return search(head, str);
 }
 /*
@@ -89,12 +91,15 @@ void syntax_error() {
   /* TODO: here, we should return the #chars from the end -- saved in last_search */
   /*fprintf(stderr, "syntax error\n");*/ exit(1); }
 void eof_error() { /*fprintf(stderr, "EOF error\n");*/ exit(-1); }
-void next_ch() { ch = getc(v); }
+void next_ch() {
+  /*ch = getc(v);*/
+  ch = buffer[buffer_i++];
+}
 
 void next_sym()
 { again: switch (ch)
     { case ' ': case '\n': next_ch(); goto again;
-      case EOF: sym = EOI; break;
+      case '\0': sym = EOI; break;
       case '{': next_ch(); sym = LBRA; break;
       case '}': next_ch(); sym = RBRA; break;
       case '(': next_ch(); sym = LPAR; break;
@@ -139,7 +144,7 @@ void next_sym()
 
                 else next_ch();
               }
-              if (ch == EOF && is_token == -1) eof_error(); // End of file reached but token is not complete.
+              if (ch == '\0' && is_token == -1) eof_error(); // End of file reached but token is not complete.
 
             id_name[i] = '\0';
             sym = 0;
@@ -316,6 +321,20 @@ void run()
 }
 
 /*---------------------------------------------------------------------------*/
+FILE* v = 0;
+char* read_input() {
+    int counter = 0;
+    char* chars = malloc(sizeof(char) * 1000);
+    int c = 0;
+    while((c = fgetc(v)) != EOF){
+        if (counter == 1000) {
+            exit(1);
+        }
+        chars[counter++] = c;
+    }
+    chars[counter] = '\0';
+    return chars;
+}
 
 /* Main program. */
 
@@ -328,6 +347,7 @@ int main(int argc, char** argv)
   } else {
     v = stdin;
   }
+  buffer = read_input();
   init_tri();
   c(program());
 
