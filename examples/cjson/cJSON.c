@@ -43,6 +43,7 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <ctype.h>
+#include "tokens.h"
 
 #ifdef ENABLE_LOCALES
 #include <locale.h>
@@ -92,37 +93,6 @@ CJSON_PUBLIC(const char*) cJSON_Version(void)
 
     return version;
 }
-
-/* String comparison, For more accurate error response */
-
-static int precise_strncmp(const unsigned char* string1, char string2[], int num)
-{
-  int i;
-  int string_len;
-  string_len = strlen(string1);
-  //printf("String: \n");
-  //printf(string1);
-  //printf("\nLength: %d\n", string_len);
-  //printf("\nNum: %d\n", num);
-  for (i = 0; i < num; ++i)
-  {
-    if (string_len <= i)
-    {
-      //printf("Token Incomplete.\n");
-      exit(-1);
-    }
-    else if (string1[i] != string2[i])
-    {
-      //printf("Invalid char.\n");
-      exit(1);
-    }
-  }
-
-
-  //printf("* correct *\n");
-  return 0;
-}
-
 
 /* Case insensitive string comparison, doesn't consider two NULL pointers equal though */
 static int case_insensitive_strcmp(const unsigned char *string1, const unsigned char *string2)
@@ -1289,28 +1259,41 @@ static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buf
         return parse_object(item, input_buffer);
     }
 
-    const unsigned char* curr_token = (const char*)buffer_at_offset(input_buffer);
-    /* null */
-    if (can_read(input_buffer, 2) && (curr_token[0] == 'n') && (precise_strncmp((const char*)buffer_at_offset(input_buffer), "null", 4) == 0))
+    unsigned char* curr_token = (char*)buffer_at_offset(input_buffer);
+    curr_token[strlen(curr_token) - 1] = 0;
+    int is_token = check_token(curr_token);
+    /* null, true, false */
+    if (can_read(input_buffer, 2) && (is_token == 0))
     {
-        item->type = cJSON_NULL;
-        input_buffer->offset += 4;
+        //printf("Correct token.\n");
+        switch (curr_token[0])
+            {
+                case 't':
+                    item->type = cJSON_True;
+                    item->valueint = 1;
+                    input_buffer->offset += 4;
+                    break;
+                case 'f':
+                    item->type = cJSON_False;
+                    input_buffer->offset += 5;
+                    break;
+                case 'n':
+                    item->type = cJSON_NULL;
+                    input_buffer->offset += 4;
+                    break;
+                default:
+                    return false;
+            }
+
         return true;
     }
-    /* false */
-    if (can_read(input_buffer, 2) && (curr_token[0] == 'f') && (precise_strncmp((const char*)buffer_at_offset(input_buffer), "false", 5) == 0))
+    else if (is_token == -1)
     {
-        item->type = cJSON_False;
-        input_buffer->offset += 5;
-        return true;
+        exit(-1); // INCOMPLETE -1
     }
-    /* true */
-    if (can_read(input_buffer, 2) && (curr_token[0] == 't') && (precise_strncmp((const char*)buffer_at_offset(input_buffer), "true", 4) == 0))
+    else if (is_token == 1)
     {
-        item->type = cJSON_True;
-        item->valueint = 1;
-        input_buffer->offset += 4;
-        return true;
+        exit(1);
     }
 
     return false;

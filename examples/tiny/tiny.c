@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 FILE* v = 0;
+#include "tokens.h"
+
 /*
  * This is a compiler for the Tiny-C language.  Tiny-C is a
  * considerably stripped down version of C and it is meant as a
@@ -69,8 +71,8 @@ int sym;
 int int_val;
 char id_name[100];
 
-void syntax_error() { fprintf(stderr, "syntax error\n"); exit(1); }
-void eof_error() { fprintf(stderr, "EOF error\n"); exit(-1); }
+void syntax_error() { /*fprintf(stderr, "syntax error\n");*/ exit(1); }
+void eof_error() { /*fprintf(stderr, "EOF error\n");*/ exit(-1); }
 void next_ch() { ch = getc(v); }
 
 void next_sym()
@@ -94,9 +96,35 @@ void next_sym()
             sym = INT;
           }
         else if (ch >= 'a' && ch <= 'z')
-          { int i = 0; /* missing overflow check */
+          { int i = 0; int is_token = 9;/* missing overflow check */
             while ((ch >= 'a' && ch <= 'z') || ch == '_')
-              { id_name[i++] = ch; next_ch(); }
+              {
+                id_name[i++] = ch;
+                if (id_name[0] == 'i' || id_name[0] == 'e' || id_name[0] == 'd' || id_name[0] == 'w')
+                {
+                  is_token = check_token(id_name);
+                  if (is_token == 0)
+                  {
+                    //printf("Correct token.\n");
+                    next_ch();
+
+                  }
+                  else if (is_token == -1)
+                  {
+                    //printf("Incomplete.\n");
+                    next_ch(); // INCOMPLETE -1, read next char.
+                  }
+                  else if (is_token == 1)
+                  {
+                    //printf("Invalid.\n");
+                    syntax_error();
+                  }
+                }
+
+                else next_ch();
+              }
+              if (ch == EOF && is_token == -1) eof_error(); // End of file reached but token is not complete.
+
             id_name[i] = '\0';
             sym = 0;
             while (words[sym] != NULL && strcmp(words[sym], id_name) != 0)
