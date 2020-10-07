@@ -57,33 +57,4 @@ int search(struct Trie* head, char* str) {
     }
 }
 
-int main_tri(char* str) {
-    struct Trie* head = getNewTrieNode();
-    int r = 0;
 
-    insert(head, "true");
-    //r = search(head, "true");
-    //printf("true:true %d\n", r);       // print 0
-    //r = search(head, "t");
-    //printf("true:t %d\n", r);       // print -1 // incomplete
-    //r = search(head, "tr");
-    //printf("true:tr %d\n", r);       // print -1 // incomplete
-    //r = search(head, "trX");
-    //printf("true;trX %d\n", r);       // print 1 // incorrect
-
-    insert(head, "false");
-    //r = search(head, "false");
-    //printf("false:false %d\n", r);  // print 0
-
-    insert(head, "null");
-    //r = search(head, "null");
-    //printf("null:null %d\n", r);        // print 0
-
-    r = search(head, str);
-    return r;
-}
-
-int check_token(char* str) {
-
-    return main_tri(str);
-}

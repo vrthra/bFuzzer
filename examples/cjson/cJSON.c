@@ -45,6 +45,18 @@
 #include <ctype.h>
 #include "tokens.h"
 
+struct Trie* head = 0;
+void init_tri() {
+    head = getNewTrieNode();
+    insert(head, "true");
+    insert(head, "false");
+    insert(head, "null");
+}
+
+int check_token(char* str) {
+    return search(head, str);
+}
+
 #ifdef ENABLE_LOCALES
 #include <locale.h>
 #endif
@@ -1260,7 +1272,6 @@ static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buf
     }
 
     unsigned char* curr_token = (char*)buffer_at_offset(input_buffer);
-    curr_token[strlen(curr_token) - 1] = 0;
     int is_token = check_token(curr_token);
     /* null, true, false */
     if (can_read(input_buffer, 2) && (is_token == 0))
@@ -3022,6 +3033,7 @@ int main(int argc, char** argv) {
     }
     char* string = read_input();
     printf(string);
+    init_tri();
     cJSON *json = cJSON_Parse(string);
     if (argc > 1) {
       fclose(v);
