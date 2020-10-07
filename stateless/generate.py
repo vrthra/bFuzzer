@@ -43,9 +43,10 @@ def backtrack(prev_bytes, all_choices, limit=0):
     return seen, prev_bytes, choices
 
 def till_n_length_choices(my_choices, rs):
+    return my_choices # disable fudging
     all_choices = []
     for r in range(1, rs+1):
-        v = [bytes(i) for i in itertools.product(my_choices, repeat=r)]
+        v = [bytes(b''.join(i)) for i in itertools.product(my_choices, repeat=r)]
         #random.shuffle(v)
         all_choices.extend(v)
     return all_choices
