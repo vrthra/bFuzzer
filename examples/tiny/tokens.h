@@ -37,7 +37,7 @@ void insert(struct Trie *head, char* str) {
 int search(struct Trie* head, char* str) {
     struct Trie* curr = head;
     while (*str) {
-        printf("%d\n", *str);
+        //printf("%c\n", *str);
         if (*str < 'a') {
           return INCORRECT;
         }

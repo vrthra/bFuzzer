@@ -21,7 +21,7 @@ void init_tri() {
 
 int last_search = -1;
 int check_token(char* str) {
-    last_search = buffer_i;;
+    last_search = buffer_i - strlen(str);
     return search(head, str);
 }
 /*
@@ -87,9 +87,17 @@ int sym;
 int int_val;
 char id_name[100];
 
+void syntax_error_ch() {
+  exit(1);
+}
+
 void syntax_error() {
   /* TODO: here, we should return the #chars from the end -- saved in last_search */
-  /*fprintf(stderr, "syntax error\n");*/ exit(1); }
+  int e = strlen(buffer) - last_search;
+  fprintf(stderr, "syntax error %d\n", e);
+  if (!e) exit(1);
+  exit(e);
+}
 void eof_error() { /*fprintf(stderr, "EOF error\n");*/ exit(-1); }
 void next_ch() {
   /*ch = getc(v);*/
@@ -97,7 +105,8 @@ void next_ch() {
 }
 
 void next_sym()
-{ again: switch (ch)
+{ last_search = buffer_i;
+  again: switch (ch)
     { case ' ': case '\n': next_ch(); goto again;
       case '\0': sym = EOI; break;
       case '{': next_ch(); sym = LBRA; break;
@@ -138,7 +147,7 @@ void next_sym()
                   else if (is_token == 1)
                   {
                     //printf("Invalid.\n");
-                    syntax_error();
+                    syntax_error_ch();
                   }
                 }
 
@@ -151,10 +160,10 @@ void next_sym()
             while (words[sym] != NULL && strcmp(words[sym], id_name) != 0)
               sym++;
             if (words[sym] == NULL)
-              if (id_name[1] == '\0') sym = ID; else syntax_error();
+              if (id_name[1] == '\0') sym = ID; else syntax_error_ch();
           }
         else
-          syntax_error();
+          syntax_error_ch();
     }
 }
 
@@ -353,10 +362,10 @@ int main(int argc, char** argv)
 
   for (i=0; i<26; i++)
     globals[i] = 0;
-  run();
+  /*run();
   for (i=0; i<26; i++)
     if (globals[i] != 0)
-      printf("%c = %d\n", 'a'+i, globals[i]);
+      printf("%c = %d\n", 'a'+i, globals[i]);*/
   if (argc > 1) {
     fclose(v);
   }
