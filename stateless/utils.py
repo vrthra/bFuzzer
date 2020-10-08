@@ -95,10 +95,13 @@ class Validate:
             
     def _cov(self, res):
         assert res.returncode == 0
-        ol = res.stdout.decode().split('\n')
-        l = ol[1].replace('Lines executed:', '').split(' ')[0][:-1]
-        b = ol[3].replace('Taken at least once:', '').split(' ')[0][:-1]
-        return (l,b)
+        try:
+            ol = res.stdout.decode().split('\n')
+            l = ol[1].replace('Lines executed:', '').split(' ')[0][:-1]
+            b = ol[3].replace('Taken at least once:', '').split(' ')[0][:-1]
+            return (l,b)
+        except IndexError as e:
+            return (-1,-1)
 
     def f_exec(self, exe, fname):
         return do([exe, fname])
