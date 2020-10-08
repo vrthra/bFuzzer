@@ -1,5 +1,5 @@
 mjs: mjs.c
-	gcc -ldl -g -o mjs mjs.c
+	gcc -g -o mjs mjs.c -ldl 
 	gcc -fprofile-arcs -ftest-coverage -g -o mjs.cov mjs.c -ldl 
 	#gcc -Wl,--no-as-needed -ldl -fprofile-arcs -ftest-coverage -g -o mjs.cov mjs.c
 
