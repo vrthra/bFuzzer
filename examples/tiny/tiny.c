@@ -1,30 +1,11 @@
 /* file: "tinyc.c" */
-/* https://github.com/ULL-ESIT-PL-1718/tiny-c/blob/master/LICENSE GPL v3.0 */
 
 /* Copyright (C) 2001 by Marc Feeley, All Rights Reserved. */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-char* buffer = 0;
-int buffer_i = 0;
-int eof = EOF;
-#include "tokens.h"
-
-struct Trie* head = 0;
-void init_tri() {
-    head = getNewTrieNode();
-    insert(head, "do");
-    insert(head, "if");
-    insert(head, "else");
-    insert(head, "while");
-}
-
-int last_search = -1;
-int check_token(char* str) {
-    last_search = buffer_i - strlen(str);
-    return search(head, str);
-}
+FILE* v = 0;
 /*
  * This is a compiler for the Tiny-C language.  Tiny-C is a
  * considerably stripped down version of C and it is meant as a
@@ -88,28 +69,14 @@ int sym;
 int int_val;
 char id_name[100];
 
-void syntax_error_ch() {
-  exit(1);
-}
-
-void syntax_error() {
-  /* TODO: here, we should return the #chars from the end -- saved in last_search */
-  int e = strlen(buffer) - last_search;
-  fprintf(stderr, "syntax error %d\n", e);
-  if (!e) exit(1);
-  exit(e);
-}
-void eof_error() { /*fprintf(stderr, "EOF error\n");*/ exit(-1); }
-void next_ch() {
-  /*ch = getc(v);*/
-  ch = buffer[buffer_i++];
-}
+void syntax_error() { fprintf(stderr, "syntax error\n"); exit(1); }
+void eof_error() { fprintf(stderr, "EOF error\n"); exit(-1); }
+void next_ch() { ch = getc(v); }
 
 void next_sym()
-{ last_search = buffer_i;
-  again: switch (ch)
+{ again: switch (ch)
     { case ' ': case '\n': next_ch(); goto again;
-      case '\0': sym = EOI; break;
+      case EOF: sym = EOI; break;
       case '{': next_ch(); sym = LBRA; break;
       case '}': next_ch(); sym = RBRA; break;
       case '(': next_ch(); sym = LPAR; break;
@@ -127,44 +94,18 @@ void next_sym()
             sym = INT;
           }
         else if (ch >= 'a' && ch <= 'z')
-          { int i = 0; int is_token = 9;/* missing overflow check */
+          { int i = 0; /* missing overflow check */
             while ((ch >= 'a' && ch <= 'z') || ch == '_')
-              {
-                id_name[i++] = ch;
-                if (id_name[0] == 'i' || id_name[0] == 'e' || id_name[0] == 'd' || id_name[0] == 'w')
-                {
-                  is_token = check_token(id_name);
-                  if (is_token == 0)
-                  {
-                    //printf("Correct token.\n");
-                    next_ch();
-
-                  }
-                  else if (is_token == -1)
-                  {
-                    //printf("Incomplete.\n");
-                    next_ch(); // INCOMPLETE -1, read next char.
-                  }
-                  else if (is_token == 1)
-                  {
-                    //printf("Invalid.\n");
-                    syntax_error_ch();
-                  }
-                }
-
-                else next_ch();
-              }
-              if (ch == '\0' && is_token == -1) eof_error(); // End of file reached but token is not complete.
-
+              { id_name[i++] = ch; next_ch(); }
             id_name[i] = '\0';
             sym = 0;
             while (words[sym] != NULL && strcmp(words[sym], id_name) != 0)
               sym++;
             if (words[sym] == NULL)
-              if (id_name[1] == '\0') sym = ID; else syntax_error_ch();
+              if (id_name[1] == '\0') sym = ID; else syntax_error();
           }
         else
-          syntax_error_ch();
+          syntax_error();
     }
 }
 
@@ -331,20 +272,6 @@ void run()
 }
 
 /*---------------------------------------------------------------------------*/
-FILE* v = 0;
-char* read_input() {
-    int counter = 0;
-    char* chars = malloc(sizeof(char) * 1000);
-    int c = 0;
-    while((c = fgetc(v)) != EOF){
-        if (counter == 1000) {
-            exit(1);
-        }
-        chars[counter++] = c;
-    }
-    chars[counter] = '\0';
-    return chars;
-}
 
 /* Main program. */
 
@@ -352,23 +279,16 @@ int main(int argc, char** argv)
 { int i;
   /*char buffer[1024];
   fgets(buffer, 1024, stdin);*/
-  if (argc > 1) {
-    v = fopen(argv[1], "r");
-  } else {
-    v = stdin;
-  }
-  buffer = read_input();
-  init_tri();
+  v = fopen(argv[1], "r");
   c(program());
 
   for (i=0; i<26; i++)
     globals[i] = 0;
-  /*run();
+  run();
   for (i=0; i<26; i++)
     if (globals[i] != 0)
-      printf("%c = %d\n", 'a'+i, globals[i]);*/
-  if (argc > 1) {
-    fclose(v);
-  }
+      printf("%c = %d\n", 'a'+i, globals[i]);
+
+  fclose(v);
   return 0;
 }

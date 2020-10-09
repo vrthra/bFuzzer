@@ -43,19 +43,6 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <ctype.h>
-#include "tokens.h"
-
-struct Trie* head = 0;
-void init_tri() {
-    head = getNewTrieNode();
-    insert(head, "true");
-    insert(head, "false");
-    insert(head, "null");
-}
-
-int check_token(char* str) {
-    return search(head, str);
-}
 
 #ifdef ENABLE_LOCALES
 #include <locale.h>
@@ -720,8 +707,7 @@ static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_bu
     {
         if (buffer_at_offset(input_buffer)[0] == NULL)
         {
-            //printf("Need more chars 003.\n");
-            //printf("Incomplete. 001\n");
+            printf("Need more chars 003.\n");
             exit(-1);
             goto fail;
         }
@@ -750,8 +736,7 @@ static cJSON_bool parse_string(cJSON * const item, parse_buffer * const input_bu
         }
         if (((size_t)(input_end - input_buffer->content) >= input_buffer->length) || (*input_end != '\"'))
         {
-            //printf("Need more chars.\n");
-            //printf("Incomplete. 002\n");
+            printf("Need more chars.\n");
             exit(-1);
             goto fail; /* string ended unexpectedly */
         }
@@ -1242,14 +1227,34 @@ static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buf
 
     if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] == NULL))
     {
-        //printf("Need more chars 001.\n");
-        //printf("Incomplete. 003\n");
+        printf("Need more chars 001.\n");
         exit(-1);
         return false; /* no input */
     }
 
     /* parse the different types of values */
-
+    /* null */
+    if (can_read(input_buffer, 4) && (strncmp((const char*)buffer_at_offset(input_buffer), "null", 4) == 0))
+    {
+        item->type = cJSON_NULL;
+        input_buffer->offset += 4;
+        return true;
+    }
+    /* false */
+    if (can_read(input_buffer, 5) && (strncmp((const char*)buffer_at_offset(input_buffer), "false", 5) == 0))
+    {
+        item->type = cJSON_False;
+        input_buffer->offset += 5;
+        return true;
+    }
+    /* true */
+    if (can_read(input_buffer, 4) && (strncmp((const char*)buffer_at_offset(input_buffer), "true", 4) == 0))
+    {
+        item->type = cJSON_True;
+        item->valueint = 1;
+        input_buffer->offset += 4;
+        return true;
+    }
     /* string */
     if (can_access_at_index(input_buffer, 0) && (buffer_at_offset(input_buffer)[0] == '\"'))
     {
@@ -1269,42 +1274,6 @@ static cJSON_bool parse_value(cJSON * const item, parse_buffer * const input_buf
     if (can_access_at_index(input_buffer, 0) && (buffer_at_offset(input_buffer)[0] == '{'))
     {
         return parse_object(item, input_buffer);
-    }
-
-    unsigned char* curr_token = (char*)buffer_at_offset(input_buffer);
-    int is_token = check_token(curr_token);
-    /* null, true, false */
-    if (can_read(input_buffer, 2) && (is_token == 0))
-    {
-        //printf("Correct token.\n");
-        switch (curr_token[0])
-            {
-                case 't':
-                    item->type = cJSON_True;
-                    item->valueint = 1;
-                    input_buffer->offset += 4;
-                    break;
-                case 'f':
-                    item->type = cJSON_False;
-                    input_buffer->offset += 5;
-                    break;
-                case 'n':
-                    item->type = cJSON_NULL;
-                    input_buffer->offset += 4;
-                    break;
-                default:
-                    return false;
-            }
-
-        return true;
-    }
-    else if (is_token == -1)
-    {
-        exit(-1); // INCOMPLETE -1
-    }
-    else if (is_token == 1)
-    {
-        exit(1);
     }
 
     return false;
@@ -1454,19 +1423,11 @@ static cJSON_bool parse_array(cJSON * const item, parse_buffer * const input_buf
     }
     while (can_access_at_index(input_buffer, 0) && (buffer_at_offset(input_buffer)[0] == ','));
 
-
     if (cannot_access_at_index(input_buffer, 0) || buffer_at_offset(input_buffer)[0] != ']')
     {
-        if (buffer_at_offset(input_buffer)[0] != NULL)
-        {
-          //printf("Invalid char. Expecting a closing bracket.\n");
-          exit(1);
-        }
-        else {
-          //printf("Incomplete. 004\n");
-          exit(-1);
-          goto fail; /* expected end of array */
-        }
+        printf("Need more chars.\n");
+        exit(-1);
+        goto fail; /* expected end of array */
     }
 
 success:
@@ -1620,17 +1581,8 @@ static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_bu
         current_item->string = current_item->valuestring;
         current_item->valuestring = NULL;
 
-        if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] == NULL))
-        {
-          //printf("Incomplete. 006\n");
-          exit(-1);
-          goto fail; /* no input */
-        }
-
         if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] != ':'))
         {
-            //printf("Invalid char: Expecting :\n");
-            exit(1);
             goto fail; /* invalid object */
         }
 
@@ -1639,7 +1591,6 @@ static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_bu
         buffer_skip_whitespace(input_buffer);
         if (!parse_value(current_item, input_buffer))
         {
-
             goto fail; /* failed to parse value */
         }
         buffer_skip_whitespace(input_buffer);
@@ -1648,16 +1599,9 @@ static cJSON_bool parse_object(cJSON * const item, parse_buffer * const input_bu
 
     if (cannot_access_at_index(input_buffer, 0) || (buffer_at_offset(input_buffer)[0] != '}'))
     {
-      if (buffer_at_offset(input_buffer)[0] != NULL)
-      {
-        //printf("Invalid char. Expecting a closing bracket.\n");
-        exit(1);
-      }
-      else {
-        //printf("Incomplete. 005\n");
+        printf("Need more chars.\n");
         exit(-1);
-        goto fail; /* expected end of array */
-      }
+        goto fail; /* expected end of object */
     }
 
 success:
@@ -3014,7 +2958,7 @@ FILE* v = 0;
 char* read_input() {
     int counter = 0;
     char* chars = malloc(sizeof(char) * 1000);
-    int c = 0;
+    char c = 0;
     while((c = fgetc(v)) != EOF){
         if (counter == 1000) {
             exit(1);
@@ -3026,18 +2970,11 @@ char* read_input() {
 }
 
 int main(int argc, char** argv) {
-    if (argc > 1) {
-      v = fopen(argv[1], "r");
-    } else {
-      v = stdin;
-    }
+    v = fopen(argv[1], "r");
     char* string = read_input();
     printf(string);
-    init_tri();
     cJSON *json = cJSON_Parse(string);
-    if (argc > 1) {
-      fclose(v);
-    }
+    fclose(v);
     if (json == NULL) {
         printf("Invalid json.\n");
         exit(1);
