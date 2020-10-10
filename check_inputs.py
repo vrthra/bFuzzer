@@ -8,7 +8,7 @@ class PFuzzerValidator(Validate):
         with tempfile.NamedTemporaryFile() as f:
             f.write(input_str)
             f.flush()
-            res = self._exec(self.exe, f.name)
+            res = self.f_exec(self.exe, f.name)
             if res.returncode == 0:
                 return Status.Complete, None
             print('Invalid value %s' % repr(input_str))
@@ -21,16 +21,15 @@ class PFuzzerValidator(Validate):
         with tempfile.NamedTemporaryFile() as f:
             f.write(input_str)
             f.flush()
-            res1 = self._exec(self.cov_exe, f.name)
-            assert res1.returncode == 0, ('error %s' % str(input_str))
+            res1 = self.f_exec(self.cov_exe, f.name)
+            if res1.returncode != 0:
+                print('%d error %s' % (self.idx, str(input_str)))
             with chdir(self.src_dir):
                 res2 = do(['gcov', '-n', '-b', self.cov_src])
                 cov_result = self._cov(res2)
                 return cov_result
 
 class PFuzzerMjsValidator(PFuzzerValidator):
-    def _exec(self, exe, fname):
-        return do([exe, '-f', fname])
 
     def _cov(self, res):
         s = res.stdout.decode().split('\n')
