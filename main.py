@@ -43,7 +43,10 @@ def run_for(validator, name, secs=None):
         while (time.time() - start) < secs:
             i = valid_input(validator)
             if i is None: continue
-            c = validator.get_cumulative_coverage(i)
+            # disable cumulative coverage because it can be expensive.
+            # check the coverage after running.
+            # c = validator.get_cumulative_coverage(i)
+            c = (-1, -1)
             lst_generated.append((i,c, (time.time() - start)))
             print(json.dumps({'output':[j for j in i], 
                               'cumcoverage': c,
