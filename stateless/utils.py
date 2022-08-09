@@ -4,7 +4,7 @@ import os
 import json
 import errno
 import random
-
+import signal
 import os
 from contextlib import contextmanager
 import tempfile
