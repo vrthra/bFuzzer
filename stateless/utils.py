@@ -4,7 +4,7 @@ import os
 import json
 import errno
 import random
-
+import signal
 import os
 from contextlib import contextmanager
 import tempfile
@@ -33,9 +33,17 @@ def do(command, env=None, shell=False, log=False, stdin=None, **args):
         result = subprocess.Popen(command, stdout=subprocess.PIPE, stderr = subprocess.PIPE,
                               shell=shell,
                               env=dict(os.environ, **({} if env is None else env)))
-    stdout, stderr = result.communicate(timeout=10)
-    os.makedirs('build', exist_ok=True)
-    code = result.returncode
+    try:
+        stdout, stderr = result.communicate(timeout=3)
+        os.makedirs('build', exist_ok=True)
+        code = result.returncode
+    except subprocess.TimeoutExpired:
+        os.killpg(os.getpgid(result.pid), signal.SIGTERM)
+        os.makedirs('build', exist_ok=True)
+        code = 1
+        stdout = b'Timeout Error'
+        stderr = b'Timeout Error'
+
     ecode = ((256-code) * -1) if code > 127 else code
     if log:
         with open('build/do.log', 'a+') as f:
